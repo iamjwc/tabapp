@@ -19,6 +19,7 @@
     <script src="motion.js"></script>
     <script src="position.js"></script>
     <script src="views.js"></script>
+    <script src="tab_view.js"></script>
     <script src="script.js"></script>
 
     <style>
@@ -40,11 +41,13 @@
       }
 
       .cursor {
-        background-color: #555;
+        background-color: #acf;
       }
 
       .measure, table {
         display: inline-block;
+        margin: 0;
+        padding: 0;
       }
 
       .measure {
@@ -56,10 +59,6 @@
       thead th {
         background-color: #555;
         color: #fff;
-      }
-
-      tbody {
-        border-top: 10px solid #f00;
       }
 
       .slide::before {
@@ -79,6 +78,7 @@
 
       table {
         border-spacing: 0;
+        border-collapse: collapse;
       }
 
       td {
