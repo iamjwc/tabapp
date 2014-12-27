@@ -30,7 +30,7 @@
 
       #tab {
         background-color: #fff;
-        border: 2px solid #333;
+        border: 2px solid #555;
 
         padding: 50px;
       }
@@ -40,7 +40,7 @@
       }
 
       .cursor {
-        background-color: #9999FF;
+        background-color: #555;
       }
 
       .measure, table {
@@ -48,18 +48,18 @@
       }
 
       .measure {
-        border-left: 1px solid #333;
+        border-left: 1px solid #555;
+        border-bottom: 1px solid #555;
         margin-bottom: 3em;
       }
 
       thead th {
-        border-bottom: 1px solid #333;
-        background-color: #fefefe;
+        background-color: #555;
+        color: #fff;
       }
 
-      td {
-        width: 25px;
-        text-align: center;
+      tbody {
+        border-top: 10px solid #f00;
       }
 
       .slide::before {
@@ -84,6 +84,10 @@
       td {
         margin: 0;
         padding: 0;
+        width: 25px;
+        text-align: center;
+        background-image: url(stringbg.png);
+        background-position-y: -1px;
       }
     </style>
 

@@ -13,7 +13,7 @@ var MeasureView = Backbone.View.extend({
 
     var guideLine = $('<tr></tr>');
     for (var j = 0, m = this.model.get('beats'); j < m; ++j) {
-      guideLine.append($('<th class="beat">-</th><th>-</th>'));
+      guideLine.append($('<th class="beat">'+(j+1)+'</th><th>.</th>'));
     }
     this.$('thead').append(guideLine);
 
@@ -21,7 +21,7 @@ var MeasureView = Backbone.View.extend({
       var line = $('<tr></tr>');
 
       for (var j = 0, m = this.model.get('beats'); j < m; ++j) {
-        line.append($('<td class="beat">-</td><td>-</td>'));
+        line.append($('<td class="beat">&nbsp;</td><td>&nbsp;</td>'));
       }
 
       this.$('tbody').append(line);
@@ -43,7 +43,7 @@ var MeasureView = Backbone.View.extend({
   },
 
   getStringAtStringIndex: function(stringIndex) {
-    return this.$('tr:nth-child('+stringIndex+')');
+    return this.$('tr:nth-child('+(stringIndex+1)+')');
   },
 
   getFretAtBeatAndSubBeatFromString: function(string, beat, subBeat) {
