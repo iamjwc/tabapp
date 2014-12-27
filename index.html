@@ -14,12 +14,29 @@
     <script src="jquery.js"></script>
     <script src="underscore.js"></script>
     <script src="backbone.js"></script>
+    <script src="models.js"></script>
+    <script src="parser.js"></script>
+    <script src="motion.js"></script>
+    <script src="position.js"></script>
+    <script src="views.js"></script>
     <script src="script.js"></script>
 
     <style>
       body {
         font-family: 'Lucida Grande';
         font-size: 12px;
+        background-color: #fafafa;
+      }
+
+      #tab {
+        background-color: #fff;
+        border: 2px solid #333;
+
+        padding: 50px;
+      }
+
+      .hi {
+        background-color: #FF0;
       }
 
       .cursor {
@@ -32,40 +49,35 @@
 
       .measure {
         border-left: 1px solid #333;
-        border-right: 1px solid #333;
-        border-collapse: collapse;
+        margin-bottom: 3em;
       }
 
-      thead {
-        border-bottom: 2px solid #333;
+      thead th {
+        border-bottom: 1px solid #333;
+        background-color: #fefefe;
       }
 
       td {
-        width: 20px;
+        width: 25px;
         text-align: center;
       }
 
       .slide::before {
         content: "/";
-        margin: 2px;
       }
 
       .slur::before {
         content: "p";
-        margin: 2px;
       }
 
       .harmonic::before {
         content: "(";
-        margin: 2px;
       }
       .harmonic::after {
         content: ")";
-        margin: 2px;
       }
 
       table {
-        border-collapse: collapse;
         border-spacing: 0;
       }
 
