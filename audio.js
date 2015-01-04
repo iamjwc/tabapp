@@ -1,9 +1,33 @@
 var env = T("perc", {a:100, r:500});
 var pluck = T("PluckGen", {env:env, mul:0.5}).play();
 
-var MINUTE_IN_MS = 60000;
 
 var bpm = 120;
+
+Player = Backbone.Model.extend({
+  MINUTE_IN_MS: 60000;
+
+  defaults: {
+    bpm: 120,
+
+    measureIndex: 0,
+    tabPosition: 0,
+  },
+
+  initialize: function() {
+  },
+
+  play: function() {
+  },
+
+  /* Computes the amount of time between calls
+   * to the function to play audio.
+   */
+  interval: function() {
+    return this.MINUTE_IN_MS / (this.get('bpm') * 3 * 4);
+  },
+  
+});
 
 var playHeadMeasure = 0;
 var playHeadBeat = 0;
