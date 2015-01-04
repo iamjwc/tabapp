@@ -1,44 +1,74 @@
-var env = T("perc", {a:0, r:1000});
+var env = T("perc", {a:100, r:500});
 var pluck = T("PluckGen", {env:env, mul:0.5}).play();
 
 var MINUTE_IN_MS = 60000;
 
 var bpm = 120;
 
+var playHeadMeasure = 0;
+var playHeadBeat = 0;
+var playHeadEighthBeat = 0;
+var playHeadTripletBeat = 0;
+var playHeadSixteenthBeat = 0;
+var tuning = [64, 59, 55, 50, 45, 40];
+
 player = T("interval", {interval:MINUTE_IN_MS / (bpm * 3 * 4)}, function(count) {
-  
-  //console.log(count);
-  ///var noteNum  = 69 + [0, 2, 4, 5, 7, 9, 11, 12][count % 8];
-  //var noteNum2 = 69 + [0, 2, 4, 5, 7, 9, 11, 12][(count+2) % 8];
-  //var velocity = 64 + (count % 64);
-  //pluck.noteOn(noteNum, velocity);
+  var tab = tabView.model;
+  var currentMeasure = tab.get('measures').at(playHeadMeasure);
+
+  if (!currentMeasure) {
+    player.stop();
+    return;
+  }
+
+  // Don't play anything that doesn't fall on an eighth note right now.
+  if (count % 6 != 0) {
+    return;
+  }
+
+  // Play each fretted note at this point in time.
+  var notes = currentMeasure.notesAtBeatAndSubBeat(playHeadBeat, playHeadEighthBeat);
+  _(notes).each(function(note) {
+    pluck.noteOn(tuning[note.get('stringIndex')] + note.get('fret'), 200);
+  });
 
   // down beat
   if (count % 12 == 0) {
-  pluck.noteOn(40, 64);
-  }
-
-  // one and
-  if (count % 6 == 0) {
-    pluck.noteOn(44, 64);
+    playHeadBeat += 1;
+    playHeadEighthBeat = 0;
+    playHeadTripletBeat = 0;
+    playHeadSixteenthBeat = 0;
+  } else if (count % 6 == 0) {
+    // one and
+    playHeadEighthBeat += 1;
   }
 
   // Triplets
-  if (count % 2 == 0) {
-    pluck.noteOn(47, 64);
+  if (count % 4 == 0) {
+    playHeadTripletBeat += 1;
+    //return;
   }
 
-  //if ((count+2) % 8 == 0) {
-   // pluck2.noteOff(noteNum2);
-  //}
+  if (playHeadBeat > currentMeasure.get('beats')) {
+    playHeadMeasure += 1;
+    playHeadBeat = 1;
+    playHeadEighthBeat = 0;
+    currentMeasure = tab.get('measures').at(playHeadMeasure);
+  }
 })
 
 
 
 $(function() {
-  $('#start').on('click', function() {
+ $('#start').on('click', function() {
+    playHeadMeasure = 0;
+    playHeadBeat = 0;
+    playHeadEighthBeat = 0;
+    playHeadTripletBeat = 0;
+    playHeadSixteenthBeat = 0;
     player.start();
   });
+
   $('#stop').on('click', function() {
     player.stop();
   });
