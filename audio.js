@@ -5,11 +5,10 @@ var pluck = T("PluckGen", {env:env, mul:0.5}).play();
 var bpm = 120;
 
 Player = Backbone.Model.extend({
-  MINUTE_IN_MS: 60000;
+  MINUTE_IN_MS: 60000,
 
   defaults: {
     bpm: 120,
-
     measureIndex: 0,
     tabPosition: 0,
   },
@@ -36,7 +35,7 @@ var playHeadTripletBeat = 0;
 var playHeadSixteenthBeat = 0;
 var tuning = [64, 59, 55, 50, 45, 40];
 
-player = T("interval", {interval:MINUTE_IN_MS / (bpm * 3 * 4)}, function(count) {
+player = T("interval", {interval:60000 / (bpm * 3 * 4)}, function(count) {
   var tab = tabView.model;
   var currentMeasure = tab.get('measures').at(playHeadMeasure);
 

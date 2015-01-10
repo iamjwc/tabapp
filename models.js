@@ -1,13 +1,63 @@
 var Note = Backbone.Model.extend({
+  defaults: {
+    fret: null,
+    modifier: null,
+
+    // O-based string. For standard guitar tuning, E = 0, B = 1, G = 2, etc.
+    stringIndex: null,
+  },
+
+  validate: function(attributes) {
+    // Fret Validations
+    if (!attributes.fret) {
+      return "must specify fret";
+    } else {
+      if (attributes.fret < 0 || attributes.fret > 25) {
+        return "must be valid fret"
+      }
+    }
+  },
+
   isHarmonic: function() {
     return this.get('modifier') == 'harmonic';
   },
 });
 
-var Measure = Backbone.Model.extend({
+/* A 'beat'
+ * 
+ * |+                   | # 1 quarter note
+ * |+         -         | # 1 quarter, 1 eighth - Most common form
+ * |+     -       -     | # 1 quarter, triplet 8th notes
+ * |+    .    -    .    |  
+ * |+  .   .  -  .   .  | 
+ *
+ */
+var Column = Backbone.Model.extend({
+  defaults: {
+  },
+
+  validate: function(attributes) {
+  },
+
   initialize: function() {
     this.set('notes', new Backbone.Collection([], {
       model: Note
+    }));
+  },
+}, {
+  validLocations: {
+    whole:     true,
+    half:      true,
+    quarter:   true,
+    eighth:    true,
+    sixteenth: true,
+  }
+});
+
+var Measure = Backbone.Model.extend({
+  initialize: function() {
+    this.set('columns', new Backbone.Collection([], {
+      model: Column
     }));
   },
 

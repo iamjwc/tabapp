@@ -1,16 +1,13 @@
-/* Need the concept of a PartialMeasureView to enable proper
- * wrapping.
- */
-
-var MeasureView = Backbone.View.extend({
-  className: "meausre",
+var ColumnView = Backbone.View.extend({
+  className: "column",
 
   events: {
   },
 
-  initialize: function() {
-    this.listenTo(this.model, "change", this.render);
+  template: _.template("<table><tr><th><th></tr><tbody></tbody></table>"),
 
+
+  initialize: function() {
     this.$el.attr('style', '');
     this.$el.attr('id', '');
     this.$el.addClass('measure');
@@ -34,7 +31,7 @@ var MeasureView = Backbone.View.extend({
     var self = this;
     this.model.get('notes').each(function(note) {
       var string = self.getStringAtStringIndex(note.get('stringIndex'));
-      var fret = self.getFretAtBeatAndSubBeatFromString(string, note.get('beat'), note.get('subBeat'));
+      var fret = self.getFretAtPositionFromString(string, note.get('position'));
 
       fret.text(note.get('fret'));
       fret.addClass(note.get('modifier'));
@@ -50,7 +47,10 @@ var MeasureView = Backbone.View.extend({
     return this.$('tr:nth-child('+(stringIndex+1)+')');
   },
 
-  getFretAtBeatAndSubBeatFromString: function(string, beat, subBeat) {
+  getFretAtPositionFromString: function(string, position) {
+    var beat = Math.floor(position / 2);
+    var subBeat = position % 2;
+
     var td = $(string.find('td.beat')[beat-1]);
 
     for (var i = 0; i < subBeat; ++i) {
@@ -65,6 +65,10 @@ var MeasureView = Backbone.View.extend({
   },
 
   render: function() {
+    var html = $(this.template(dict));
+
+    // Append the result to the view's element.
+    this.$el.append(html)
   },
 
   cellAtPosition: function(position) {

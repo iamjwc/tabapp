@@ -3,17 +3,28 @@ var TabParser = Backbone.Model.extend({
    * tab as a single long line.
    */
   linearizeTab: function(tabString) {
-    var lines = tabString.split("\n\n");
+    var lines = _(tabString.split("\n\n")).map(function(tabLine) {
+      return MultilineString.fromString(tabLine)
+    });
 
-    var strings = lines.shift().split("\n");
+    var line = lines.shift();
     while (lines.length > 0) {
-      var newLines = lines.shift().split("\n");
-      for (var i in newLines) {
-        strings[i] = [strings[i], newLines[i]].join("")
-      }
+      line = line.add(lines.shift());
     }
 
-    return strings.join("\n").replace(/\/\//g, "/").replace(/\|\|/g, "|");
+    return line.replace(/\/\//g, "/").replace(/\|\|/g, "|");
+  },
+
+  /* Might not actually be useful.
+   */
+  splitTabIntoColumns: function(tabString) {
+    return _(this.splitTabIntoMeasures(tabString))
+      .chain()
+      .map(function(measureString) {
+        return this.splitMeasureIntoColumns(measureString);
+      })
+      .flatten()
+      .value();
   },
 
   /* Takes a linear tab string and splits it into an array
@@ -23,120 +34,177 @@ var TabParser = Backbone.Model.extend({
    * having those chars at the very beginning and end of the
    * lines.
    */
-  splitTabIntoMeasures: function(tabString) {
-    var lines = tabString.split("\n");
-
-    lines = _(lines).map(function(line, idx) {
-      if (idx == 0) {
-        return line.split("/")
-      } else {
-        return line.split("|")
-      }
-    });
-
-    var measures = _.zip.apply(_, lines).map(function(m) { return m.join("\n") });
+  splitTabIntoMeasures: function(tabMLString) {
+    // Split the tab by measures.
+    var measures = tabMLString.split("|");
 
     return _(measures).reject(function(m) {
       // Remove blank lines.
-      return m.match(/^\n+$/);
+      return m.toString().match(/^\n+$/);
     });
   },
 
-  /* Figure out how many beats are in this measure.
-   */
-  beatsInMeasure: function(measureString) {
-    return measureString.split("\n")[0].split("+").length - 1;
+  splitMeasureIntoColumns: function(measureMLString) {
+    // Trash repeat signs because they aren't
+    // important here.
+    measureMLString = measureMLString.replace(/:/g, "");
+      
+    var guideLine = measureMLString.lines[0];
+
+    var subColumnWidths = this.subColumnWidths(guideLine);
+
+    // Split lines into subcolumns.
+    var substringStart = 0;
+    var subColumns = _(subColumnWidths).map(function(width) {
+      var subColumn = measureMLString.substring(substringStart, substringStart + width);
+
+      substringStart += width;
+
+      return subColumn;
+    });
+    return subColumns;
+
+    /*
+    // Merge subcolumns back into individual, whole columns.
+    var columns = [];
+    var currentColumn = [];
+    for (var i in subColumns) {
+      i = Number(i);
+
+      var nextSubColumnStartsNewColumn = subColumns[i+1] && subColumns[i+1].lines[0].match(/\+/);
+      var isLastSubColumn = i == subColumns.length-1;
+
+      currentColumn.push(subColumns[i]);
+
+      if (nextSubColumnStartsNewColumn || isLastSubColumn) {
+        columns.push(currentColumn);
+        currentColumn = [];
+      }
+    }
+
+    return columns;
+    */
   },
 
-  numberOfStrings: function(measureString) {
-    return measureString.split("\n").length - 1;
+  /* Figure out how wide each subcolumn in a measure is.
+   *
+   * Takes a guideLine and returns an array of widths for each
+   * subcolumn.
+   *
+   * A subcolumn has 1 space before the note indicator (+/-/.)
+   * that can hold a modifier and goes all the way until the next
+   * subcolumn beginning.
+   *
+   * Very last character of the measure should *always* be simply
+   * a spacer.
+   */
+  subColumnWidths: function(guideLine) {
+    var subColumns = [];
+    var currentColumn = "";
+
+    for (var i = 0, n = guideLine.length-1; i < n; ++i) {
+      var isVeryBeginningOfLine = i == 0;
+      var isBeginningOfNewSubColumn = !!(guideLine[i] == " " && (guideLine[i+1] || "").match(/[\+\-\.]/));
+
+      if (!isVeryBeginningOfLine && isBeginningOfNewSubColumn) {
+        subColumns.push(currentColumn);
+        currentColumn = "";
+      }
+
+      currentColumn += guideLine[i];
+    }
+
+    // Push last thing into subColumns.
+    subColumns.push(currentColumn);
+
+    return _(subColumns).map(function(sc) { return sc.length });
+  },
+
+  /* Figure out how many columns are in this measure.
+   */
+  columnsInMeasure: function(measureMLString) {
+    return measureMLString.lines[0].split("+").length - 1;
+  },
+
+  numberOfStrings: function(measureMLString) {
+    return measureMLString.lines.length - 1;
   },
 
   /* Measure has a start repeat sign.
    */
-  measureStartsRepeat: function(measureString) {
-    return measureString[0] == ":";
+  measureStartsRepeat: function(measureMLString) {
+    return measureMLString.lines[0][0] == ":";
   },
 
   /* Measure has a end repeat sign.
    */
-  measureEndsRepeat: function(measureString) {
-    return measureString[measureString.length-1] == ":";
+  measureEndsRepeat: function(measureMLString) {
+    var guideLine = measureMLString.lines[0];
+    return guideLine[guideLine-1] == ":";
   },
 
-  parseNotesFromMeasure: function(measureString) {
-    var lines = measureString.split("\n");
+  columnGuideLineToLocation: function(columnGuideLine) {
+    if (columnGuideLine.match(/\+/)) {
+      return "quarter";
+    } else if (columnGuideLine.match(/\-/)) {
+      return "eighth";
+    } else if (columnGuideLine.match(/\./)) {
+      return "sixteenth";
+    }
+  },
 
-    var guideLine = lines.shift();
-
-    var notes = [];
-
-    for (var j in lines) {
-      var line = lines[j];
-      var modifier = null;
-      var fretDigit = "";
-
-      var notesOnLine = [];
-      var beat = 0;
-      var subBeat = 0;
-
-      for (var i in guideLine) {
-        if (guideLine[i] == "+") {
-          beat += 1;
-          subBeat = 0;
-        } else if (guideLine[i] == "-") {
-          subBeat += 1;
-        }
-
-        if (line[i].match(/\d/)) {
-          fretDigit += line[i]
-        } else {
-          // If we are not on a fret digit and there is
-          // already a fret digit saved, then we have
-          // completed parsing the note.
-          if (fretDigit.match(/\d/)) {
-            notesOnLine.push({
-              fret: Number(fretDigit),
-              modifier: modifier,
-              stringIndex: Number(j),
-              beat: beat,
-              subBeat: subBeat,
-            });
-
-            modifier = null;
-            fretDigit = "";
-          }
-
-          if (line[i] == "/") {
-            modifier = "slide";
-          } else if (line[i] == "h" || line[i] == "p") {
-            modifier = "slur";
-          } else if (line[i] == "(") {
-            modifier = "harmonic";
-          }
-        }
+  /* Takes a single column's line and converts
+   * it to a Note, if it isn't blank. Handles
+   * parsing the modifier, as well.
+   */
+  columnLineToNote: function(line, stringIndex) {
+    if (line.match(/\d/)) {
+      var modifier;
+      if (line[0] == "/") {
+        modifier = "slide";
+      } else if (line[0] == "h" || line[0] == "p") {
+        modifier = "slur";
+      } else if (line[0] == "<") {
+        modifier = "harmonic";
       }
 
-      notes.push(notesOnLine);
-    }
+      var fret = line.match(/(\d+)/)[1];
 
-    return notes;
+      return new Note({
+        fret: Number(fret),
+        modifier: modifier,
+        stringIndex: stringIndex,
+      });
+    }
   },
 
-  parseMeasure: function(measureString) {
-    return {
-      beats: this.beatsInMeasure(measureString),
-      startsRepeat: this.measureStartsRepeat(measureString),
-      endsRepeat: this.measureEndsRepeat(measureString),
-      notes: this.parseNotesFromMeasure(measureString),
+  /* Takes a single column as a string.
+   * Returns a new Column object with the notes
+   * from the string parsed into Note objects.
+   */
+  buildColumnObjectFromColumn: function(column) {
+    var c = new Column({
+      location: this.columnGuideLineToLocation(column.lines[0]),
+    });
+
+    for (var i = 1, n = column.lines.length; i < n; ++i) {
+      var note = this.columnLineToNote(column.lines[i], i-1);
+      if (note) {
+        c.get('notes').add(note)
+      }
     }
+
+    return c;
   },
 
   parse: function(tabString) {
     var linearTab = this.linearizeTab(tabString);
-    var guideLine = linearTab.split("\n")[0];
 
-    console.log("\n"+linearTab);
+    // Trash any ">" before we go further, because they are
+    // only cosmetic.
+    linearTab = linearTab.replace(/\>/g, "-");
+
+    var guideLine = linearTab.lines[0];
 
     var tabObject = new Tab({
       numberOfStrings: this.numberOfStrings(linearTab),
@@ -144,26 +212,17 @@ var TabParser = Backbone.Model.extend({
 
     var measures = this.splitTabIntoMeasures(linearTab);
     for (var i in measures) {
-      console.log("\n" + measures[i]);
-      var parsedMeasure = this.parseMeasure(measures[i]);
-      console.log(parsedMeasure);
-
       var measureObject = new Measure({
         tab: tabObject,
-        beats: parsedMeasure.beats,
-        startsRepeat: parsedMeasure.startsRepeat,
-        endsRepeat: parsedMeasure.endsRepeat,
+        startsRepeat: this.measureStartsRepeat(measures[i]),
+        endsRepeat: this.measureEndsRepeat(measures[i]),
       });
-      var notes = _(parsedMeasure.notes).flatten();
-      for (var j in notes) {
-        measureObject.get('notes').add({
-          fret: notes[j].fret,
-          modifier: notes[j].modifier,
-          stringIndex: notes[j].stringIndex,
-          beat: notes[j].beat,
-          subBeat: notes[j].subBeat,
-        });
+
+      var columns = this.splitMeasureIntoColumns(measures[i]);
+      for (var j in columns) {
+        measureObject.get('columns').add(this.buildColumnObjectFromColumn(columns[j]));
       }
+
       tabObject.get('measures').add(measureObject);
     }
 

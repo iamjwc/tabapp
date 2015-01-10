@@ -4,7 +4,7 @@ var TabView = Backbone.View.extend({
   initialize: function() {
     this.measureViews = new Backbone.Collection([], { model: MeasureView });
 
-    this.cursor = new Position(1,1);
+    this.cursor = new Position(0,0);
 
     this.listenTo(this.model.get('measures'), "add", this.addMeasure);
 
@@ -32,10 +32,10 @@ var TabView = Backbone.View.extend({
   },
 
   cellAtPosition: function(position) {
-    var line = Math.floor((position.y - 1) / this.heightOfLine()) + 1;
+    var line = Math.floor(position.y / this.heightOfLine());
     console.log(line)
 
-    var string = ((position.y - 1) % this.heightOfLine()) + 1;
+    var string = (position.y % this.heightOfLine());
 
     var mvs = this.measureViewsByLine()[line - 1];
 
