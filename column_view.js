@@ -4,10 +4,21 @@ var ColumnView = Backbone.View.extend({
   events: {
   },
 
-  template: _.template("<table><tr><th><th></tr><tbody></tbody></table>"),
-
-
   initialize: function() {
+    var column = $(document.getElementById('columnTemplate').innerHTML);
+    var stringTemplate = document.getElementById('stringTemplate').innerHTML;
+
+    for (var i = 0, n = tab.get('numberOfStrings'); i < n; ++i) {
+      $('tbody', column).append($(stringTemplate));
+    }
+
+    this.setElement(column);
+
+
+
+                    //document.getElementById('columnTemplate').cloneNode(true)
+
+    /*
     this.$el.attr('style', '');
     this.$el.attr('id', '');
     this.$el.addClass('measure');
@@ -41,6 +52,7 @@ var ColumnView = Backbone.View.extend({
       // beat: notes[j].beat,
       // subBeat: notes[j].subBeat,
     });
+    */
   },
 
   getStringAtStringIndex: function(stringIndex) {
@@ -87,5 +99,16 @@ var ColumnView = Backbone.View.extend({
     this.cursor = cursor;
   },
 
+}, {
+  MODES_TO_DATA: {
+    "trip8th": [0,4,8],
+    "8th-8th": [0,6],
+    "8th-16th": [0,6,9],
+    "16th-8th": [0,3,6],
+    "16th-16th": [0,3,6,9],
+    "trip16th-16th": [0,2,4,6,9],
+    "16th-trip16th": [0,6,8,10],
+    "trip16th-trip16th": [0,2,4,6,8,10],
+  },
 });
 

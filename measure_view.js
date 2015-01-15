@@ -9,6 +9,17 @@ var MeasureView = Backbone.View.extend({
   },
 
   initialize: function() {
+    this.columnViews = new Backbone.Collection([], { model: ColumnView });
+
+    this.cursor = new Position(0,0);
+
+    this.listenTo(this.model.get('columns'), "add", this.addColumn);
+
+    var self = this;
+    this.model.get('columns').each(function(m) { self.addColumn(m) });
+
+    return;
+
     //this.listenTo(this.model, "change", this.render);
 
     this.$el.attr('style', '');
@@ -44,6 +55,16 @@ var MeasureView = Backbone.View.extend({
       // beat: notes[j].beat,
       // subBeat: notes[j].subBeat,
     });
+  },
+
+  addColumn: function(column, collection, options) {
+    this.columnViews.add({
+      model: column,
+    });
+
+    var mv = this.columnViews.last();
+
+    this.$el.append(mv.$el);
   },
 
   getStringAtStringIndex: function(stringIndex) {

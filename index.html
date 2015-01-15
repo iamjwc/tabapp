@@ -19,6 +19,7 @@
     <script src="parser.js"></script>
     <script src="motion.js"></script>
     <script src="position.js"></script>
+    <script src="column_view.js"></script>
     <script src="measure_view.js"></script>
     <script src="tab_view.js"></script>
     <script src="timbre.js"></script>
@@ -102,6 +103,47 @@
   </div>
 
   <a href="#" id="start">Start</a> <a href="#" id="stop">Stop</a>
+
+  <!-- Column and string templates should have 12 (Column.SUBDIVISIONS) columns. -->
+  <script type="text/template" id="columnTemplate">
+    <table>
+      <thead>
+        <tr>
+          <th class="subdivision0">&nbsp;</th>
+          <th class="subdivision1">&nbsp;</th>
+          <th class="subdivision2">&nbsp;</th>
+          <th class="subdivision3">&nbsp;</th>
+          <th class="subdivision4">&nbsp;</th>
+          <th class="subdivision5">&nbsp;</th>
+          <th class="subdivision6">&nbsp;</th>
+          <th class="subdivision7">&nbsp;</th>
+          <th class="subdivision8">&nbsp;</th>
+          <th class="subdivision9">&nbsp;</th>
+          <th class="subdivision10">&nbsp;</th>
+          <th class="subdivision11">&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </script>
+
+  <script type="text/template" id="stringTemplate">
+    <tr>
+      <td class="subdivision0">&nbsp;</td>
+      <td class="subdivision1">&nbsp;</td>
+      <td class="subdivision2">&nbsp;</td>
+      <td class="subdivision3">&nbsp;</td>
+      <td class="subdivision4">&nbsp;</td>
+      <td class="subdivision5">&nbsp;</td>
+      <td class="subdivision6">&nbsp;</td>
+      <td class="subdivision7">&nbsp;</td>
+      <td class="subdivision8">&nbsp;</td>
+      <td class="subdivision9">&nbsp;</td>
+      <td class="subdivision10">&nbsp;</td>
+      <td class="subdivision11">&nbsp;</td>
+    </tr>
+  </script>
 
   </body>
 </html>

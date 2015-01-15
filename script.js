@@ -55,7 +55,7 @@ $(function() {
   //var mv = new MeasureView(m, $('#measure-prototype'));
 
   var tp = new TabParser();
-  var tab = tp.parse(tabString);
+  tab = tp.parse(tabString);
 
   tabView = new TabView({
     el: $('#tab'),

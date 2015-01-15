@@ -16,8 +16,8 @@ var TabView = Backbone.View.extend({
     this.$el.attr('style', '');
 
     // Remove current cursor and replace it.
-    $('.cursor', this.el).removeClass('cursor');
-    this.cellAtPosition(this.cursor).addClass('cursor');
+    //$('.cursor', this.el).removeClass('cursor');
+    //this.cellAtPosition(this.cursor).addClass('cursor');
 
     //var self = this;
     //this.measureViews.each(function(mv, idx) {
@@ -119,7 +119,6 @@ var TabView = Backbone.View.extend({
   addMeasure: function(measure, collection, options) {
     this.measureViews.add({
       model: measure,
-      el:    $($('#measure-prototype')[0].cloneNode(true)),
     });
 
     var mv = this.measureViews.last();
