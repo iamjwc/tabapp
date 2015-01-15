@@ -5,6 +5,11 @@ var Note = Backbone.Model.extend({
 
     // O-based string. For standard guitar tuning, E = 0, B = 1, G = 2, etc.
     stringIndex: null,
+
+    // Position local to the column where the note should appear.
+    // I'm not a fan of this design decision, but its easy and I'm
+    // not really sure how to do it in a better way with Backbone.
+    localPosition: null,
   },
 
   validate: function(attributes) {
@@ -16,6 +21,12 @@ var Note = Backbone.Model.extend({
         return "must be valid fret"
       }
     }
+
+    if (!attributes.localPosition) {
+      return "must specify localPosition";
+    } else if (attributes.localPosition < 0 || attributes.localPosition > Column.SUBDIVISTIONS) {
+      return "invalid localPosition";
+    }
   },
 
   isHarmonic: function() {
@@ -23,13 +34,17 @@ var Note = Backbone.Model.extend({
   },
 });
 
-/* A 'beat'
+/* A 'beat' with N subdivisions.
+ *
+ * Graphically, here are the subdivisions:
  * 
- * |+                   | # 1 quarter note
- * |+         -         | # 1 quarter, 1 eighth - Most common form
- * |+     -       -     | # 1 quarter, triplet 8th notes
- * |+    .    -    .    |  
- * |+  .   .  -  .   .  | 
+ * 12 % 12 == 0  |+           |  1 quarter note
+ * 12 % 6  == 0  |+     -     |  2 eighth
+ * 12 % 4  == 0  |+   -   -   |  3 eighth note triplets
+ * 12 % 3  == 0  |+  .  -  .  |  4 sixteenth notes
+ * 12 % 2  == 0  |+ . . - . . |  6 sixteenth note triplets
+ *
+ * Width: 12
  *
  */
 var Column = Backbone.Model.extend({
@@ -44,14 +59,12 @@ var Column = Backbone.Model.extend({
       model: Note
     }));
   },
+
+  notesAtSubdivision: function(i) {
+    return this.get('notes').select(function(n) { return n.get('localPosition') == i });
+  },
 }, {
-  validLocations: {
-    whole:     true,
-    half:      true,
-    quarter:   true,
-    eighth:    true,
-    sixteenth: true,
-  }
+  SUBDIVISIONS: 12,
 });
 
 var Measure = Backbone.Model.extend({

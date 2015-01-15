@@ -44,7 +44,7 @@ var TabParser = Backbone.Model.extend({
     });
   },
 
-  splitMeasureIntoColumns: function(measureMLString) {
+  splitMeasureIntoSubColumns: function(measureMLString) {
     // Trash repeat signs because they aren't
     // important here.
     measureMLString = measureMLString.replace(/:/g, "");
@@ -63,27 +63,6 @@ var TabParser = Backbone.Model.extend({
       return subColumn;
     });
     return subColumns;
-
-    /*
-    // Merge subcolumns back into individual, whole columns.
-    var columns = [];
-    var currentColumn = [];
-    for (var i in subColumns) {
-      i = Number(i);
-
-      var nextSubColumnStartsNewColumn = subColumns[i+1] && subColumns[i+1].lines[0].match(/\+/);
-      var isLastSubColumn = i == subColumns.length-1;
-
-      currentColumn.push(subColumns[i]);
-
-      if (nextSubColumnStartsNewColumn || isLastSubColumn) {
-        columns.push(currentColumn);
-        currentColumn = [];
-      }
-    }
-
-    return columns;
-    */
   },
 
   /* Figure out how wide each subcolumn in a measure is.
@@ -143,21 +122,11 @@ var TabParser = Backbone.Model.extend({
     return guideLine[guideLine-1] == ":";
   },
 
-  columnGuideLineToLocation: function(columnGuideLine) {
-    if (columnGuideLine.match(/\+/)) {
-      return "quarter";
-    } else if (columnGuideLine.match(/\-/)) {
-      return "eighth";
-    } else if (columnGuideLine.match(/\./)) {
-      return "sixteenth";
-    }
-  },
-
   /* Takes a single column's line and converts
    * it to a Note, if it isn't blank. Handles
    * parsing the modifier, as well.
    */
-  columnLineToNote: function(line, stringIndex) {
+  subColumnLineToNote: function(line, noteAttributes) {
     if (line.match(/\d/)) {
       var modifier;
       if (line[0] == "/") {
@@ -170,11 +139,10 @@ var TabParser = Backbone.Model.extend({
 
       var fret = line.match(/(\d+)/)[1];
 
-      return new Note({
+      return new Note(_.extend({
         fret: Number(fret),
         modifier: modifier,
-        stringIndex: stringIndex,
-      });
+      }, noteAttributes || {}));
     }
   },
 
@@ -182,19 +150,102 @@ var TabParser = Backbone.Model.extend({
    * Returns a new Column object with the notes
    * from the string parsed into Note objects.
    */
-  buildColumnObjectFromColumn: function(column) {
+  buildColumnObjectFromSubColumns: function(subcolumns) {
     var c = new Column({
-      location: this.columnGuideLineToLocation(column.lines[0]),
     });
 
-    for (var i = 1, n = column.lines.length; i < n; ++i) {
-      var note = this.columnLineToNote(column.lines[i], i-1);
-      if (note) {
-        c.get('notes').add(note)
+    var guideLine = _(subcolumns).map(function(sc) {
+      return sc.lines[0];
+    }).join("");
+
+    var subdivisions = this.guideLineTimingSubdivisions(guideLine);
+
+    for (var i = 0, n = subcolumns.length; i < n; ++i) {
+      for (var j = 1, m = subcolumns[i].lines.length-1; j < m; ++j) {
+        var note = this.subColumnLineToNote(subcolumns[i].lines[j], {
+          localPosition: subdivisions[i],
+          stringIndex: j-1,
+        });
+
+        if (note) {
+          c.get('notes').add(note)
+        }
       }
     }
 
     return c;
+  },
+
+  /* Takes a guideLine for a single column and
+   * returns an array of the subdivisions the
+   * subcolumns are at.
+   *
+   * 12 % 12 == 0  |+           |  1 quarter note
+   * 12 % 6  == 0  |+     -     |  2 eighth
+   * 12 % 4  == 0  |+   -   -   |  3 eighth note triplets
+   * 12 % 3  == 0  |+  .  -  .  |  4 sixteenth notes
+   * 12 % 2  == 0  |+ . . - . . |  6 sixteenth note triplets
+   *
+   * Ex:
+   *
+   *   guideLineTimingSubdivisions(" + -")
+   *   => [0, 6]
+   *
+   *   guideLineTimingSubdivisions(" + ")
+   *   => [0]
+   *
+   *   guideLineTimingSubdivisions(" + . . - .")
+   *   => [0, 2, 4, 6, 9]
+   *
+   */
+  guideLineTimingSubdivisions: function(guideLine) {
+    guideLine = guideLine.replace(/\s/g, "");
+
+    var subdivisions = [0];
+
+    if (guideLine.indexOf("+..") > -1) {
+      subdivisions.push(2);
+      subdivisions.push(4);
+    } else if (guideLine.indexOf("+.") > -1) {
+      subdivisions.push(3);
+    }
+
+    if (guideLine.indexOf("--") > -1) {
+      subdivisions.push(4)
+      subdivisions.push(8)
+    } else if (guideLine.indexOf("-..") > -1) {
+      subdivisions.push(6);
+      subdivisions.push(8);
+      subdivisions.push(10);
+    } else if (guideLine.indexOf("-.") > -1) {
+      subdivisions.push(6);
+      subdivisions.push(9);
+    } else if (guideLine.indexOf("-") > -1) {
+      subdivisions.push(6);
+    }
+
+    return subdivisions;
+  },
+
+  /* Takes an array of subcolumns and groups them by
+   * number of columns within the array.
+   *
+   * Assumes the first subcolumn is the start of a
+   * column.
+   */
+  subColumnsGroupedIntoColumns: function(subColumns) {
+    return _(subColumns).inject(function(a, sc) {
+      // Put a new column in the output array when we
+      // come across a new beat.
+      if (sc.lines[0].match(/\+/)) {
+        a.push([])
+      }
+      
+      // Add the subcolumn to the most recent column.
+      a[a.length-1].push(sc);
+
+      return a;
+    }, []);
   },
 
   parse: function(tabString) {
@@ -218,9 +269,11 @@ var TabParser = Backbone.Model.extend({
         endsRepeat: this.measureEndsRepeat(measures[i]),
       });
 
-      var columns = this.splitMeasureIntoColumns(measures[i]);
-      for (var j in columns) {
-        measureObject.get('columns').add(this.buildColumnObjectFromColumn(columns[j]));
+      var subColumns = this.splitMeasureIntoSubColumns(measures[i]);
+      var subColumnsGroupedIntoColumns = this.subColumnsGroupedIntoColumns(subColumns);
+      for (var j in subColumnsGroupedIntoColumns) {
+        var c = this.buildColumnObjectFromSubColumns(subColumnsGroupedIntoColumns[j]);
+        measureObject.get('columns').add(c);
       }
 
       tabObject.get('measures').add(measureObject);
