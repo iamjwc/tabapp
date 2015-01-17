@@ -1,7 +1,6 @@
 var env = T("perc", {a:100, r:500});
 var pluck = T("PluckGen", {env:env, mul:0.5}).play();
 
-
 var bpm = 120;
 
 Player = Backbone.Model.extend({
@@ -9,24 +8,53 @@ Player = Backbone.Model.extend({
 
   defaults: {
     bpm: 120,
-    measureIndex: 0,
-    tabPosition: 0,
+    position: 0,
   },
 
   initialize: function() {
   },
 
   play: function() {
+    var tuning = [64, 59, 55, 50, 45, 40];
+
+    var player = T('interval', { interval: this.interval() }, function(count) {
+      var locals = tab.globalPositionToLocalPosition(count);
+      
+      var measure = tab.get('measures').at(locals.measureIndex);
+      var column = measure.get('columns').at(locals.columnIndex);
+      var notes = column.notesAtSubdivision(locals.localPosition);
+
+      for (var i = 0, n = notes.length; i < n; ++i) {
+        var note = notes[i];
+        pluck.noteOn(tuning[note.get('stringIndex')] + note.get('fret'), 200);
+      }
+    });
+
+    player.start();
   },
 
   /* Computes the amount of time between calls
    * to the function to play audio.
    */
   interval: function() {
-    return this.MINUTE_IN_MS / (this.get('bpm') * 3 * 4);
+    return this.MINUTE_IN_MS / (this.get('bpm') * Column.SUBDIVISIONS);
   },
   
 });
+
+$(function() {
+  var player = new Player;
+
+  $('#start').on('click', function() {
+    player.play();
+  });
+
+  $('#stop').on('click', function() {
+    player.stop();
+  });
+});
+
+/*
 
 var playHeadMeasure = 0;
 var playHeadBeat = 0;
@@ -82,20 +110,6 @@ player = T("interval", {interval:60000 / (bpm * 3 * 4)}, function(count) {
 
 
 
-$(function() {
- $('#start').on('click', function() {
-    playHeadMeasure = 0;
-    playHeadBeat = 0;
-    playHeadEighthBeat = 0;
-    playHeadTripletBeat = 0;
-    playHeadSixteenthBeat = 0;
-    player.start();
-  });
-
-  $('#stop').on('click', function() {
-    player.stop();
-  });
-});
 
 /* 
 // To play a single tone.

@@ -222,5 +222,28 @@ var Tab = Backbone.Model.extend({
       model: Measure,
     }));
   },
+
+  /* Takes a global "subdivision position" and returns
+   * the measure, column and local position.
+   */
+  globalPositionToLocalPosition: function(position) {
+    var localPosition = position % Column.SUBDIVISIONS;
+    var globalColumnPosition = Math.floor(position / Column.SUBDIVISIONS);
+    var measureIndex = 0;
+
+    var currentMeasure = tab.get('measures').at(measureIndex);
+    while (currentMeasure && globalColumnPosition >= currentMeasure.get('columns').length) {
+      globalColumnPosition -= currentMeasure.get('columns').length;
+
+      measureIndex += 1;
+      currentMeasure = tab.get('measures').at(measureIndex);
+    }
+
+    return {
+      localPosition: localPosition,
+      measureIndex: measureIndex,
+      columnIndex: globalColumnPosition,
+    };
+  }
 });
 
