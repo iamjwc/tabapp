@@ -5,14 +5,7 @@ var ColumnView = Backbone.View.extend({
   },
 
   initialize: function() {
-    var column = $(document.getElementById('columnTemplate').innerHTML);
-    var stringTemplate = document.getElementById('stringTemplate').innerHTML;
-
-    for (var i = 0, n = tab.get('numberOfStrings'); i < n; ++i) {
-      $('tbody', column).append($(stringTemplate));
-    }
-
-    this.setElement(column);
+    this.render();
 
 
 
@@ -77,10 +70,22 @@ var ColumnView = Backbone.View.extend({
   },
 
   render: function() {
-    var html = $(this.template(dict));
+    var column = $(document.getElementById('columnTemplate').innerHTML);
+    var stringTemplate = document.getElementById('stringTemplate').innerHTML;
 
-    // Append the result to the view's element.
-    this.$el.append(html)
+    for (var i = 0, n = tab.get('numberOfStrings'); i < n; ++i) {
+      $('tbody', column).append($(stringTemplate));
+    }
+
+    this.setElement(column);
+
+    var self = this;
+
+    this.model.get('notes').each(function(note) {
+      var td = self.$('tbody tr:nth-child(' + (note.get('stringIndex')+1) + ') > .subdivision'+note.get('localPosition'))
+      td.addClass(note.get('modifier'));
+      td.text(note.get('fret'));
+    });
   },
 
   cellAtPosition: function(position) {

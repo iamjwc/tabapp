@@ -162,7 +162,7 @@ var TabParser = Backbone.Model.extend({
 
     for (var i = 0, n = subcolumns.length; i < n; ++i) {
       for (var j = 1, m = subcolumns[i].lines.length-1; j < m; ++j) {
-        var note = this.subColumnLineToNote(subcolumns[i].lines[j], {
+        var note = this.subColumnLineToNote(subcolumns[i].lines[j+1], {
           localPosition: subdivisions[i],
           stringIndex: j-1,
         });
