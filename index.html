@@ -64,10 +64,16 @@
 
         min-width: 50px;
         max-width: 1000px;
+
+        margin-bottom: 3em;
+        box-sizing: border-box;
       }
 
       .measure > table:first-child {
         border-left: 1px solid #555;
+      }
+      #tab > .measure:last-child table:last-child {
+        border-right: 1px solid #555;
       }
 
       thead th {
@@ -98,6 +104,31 @@
       .harmonic::after {
         content: ">";
       }
+
+      .column-trip8th td, .column-trip8th th { display: none; }
+      .column-trip8th .subdivision0,
+      .column-trip8th .subdivision4,
+      .column-trip8th .subdivision8 {
+        display: table-cell;
+      }
+
+      .column-8th-8th td, .column-8th-8th th { display: none; }
+      .column-8th-8th .subdivision0,
+      .column-8th-8th .subdivision6 {
+        display: table-cell;
+      }
+
+      /*
+    "trip8th": [0,4,8],
+    "8th-8th": [0,6],
+    "8th-16th": [0,6,9],
+    "16th-8th": [0,3,6],
+    "16th-16th": [0,3,6,9],
+    "trip16th-16th": [0,2,4,6,9],
+    "16th-trip16th": [0,6,8,10],
+    "trip16th-trip16th": [0,2,4,6,8,10],
+  },
+  */
     </style>
 
   </head>
@@ -111,7 +142,7 @@
 
   <!-- Column and string templates should have 12 (Column.SUBDIVISIONS) columns. -->
   <script type="text/template" id="columnTemplate">
-    <table>
+    <table class="column-8th-8th">
       <thead>
         <tr>
           <th class="subdivision0">&nbsp;</th>
