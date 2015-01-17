@@ -39,6 +39,11 @@
 
         padding: 50px;
       }
+      #tab:after {
+        content:'';
+        display:block;
+        clear: both;
+      }
 
       .hi {
         background-color: #FF0;
@@ -48,21 +53,35 @@
         background-color: #acf;
       }
 
-      .measure, table {
+      table {
         display: inline-block;
         margin: 0;
         padding: 0;
+        border-spacing: 0;
+        border-collapse: collapse;
+        float: left;
+        border-bottom: 1px solid #555;
+
+        min-width: 50px;
+        max-width: 1000px;
       }
 
-      .measure {
+      .measure > table:first-child {
         border-left: 1px solid #555;
-        border-bottom: 1px solid #555;
-        margin-bottom: 3em;
       }
 
       thead th {
         background-color: #555;
         color: #fff;
+      }
+
+      td {
+        margin: 0;
+        padding: 0;
+        width: 25px;
+        text-align: center;
+        background-image: url(stringbg.png);
+        background-position-y: -1px;
       }
 
       .slide::before {
@@ -74,24 +93,10 @@
       }
 
       .harmonic::before {
-        content: "(";
+        content: "<";
       }
       .harmonic::after {
-        content: ")";
-      }
-
-      table {
-        border-spacing: 0;
-        border-collapse: collapse;
-      }
-
-      td {
-        margin: 0;
-        padding: 0;
-        width: 25px;
-        text-align: center;
-        background-image: url(stringbg.png);
-        background-position-y: -1px;
+        content: ">";
       }
     </style>
 
