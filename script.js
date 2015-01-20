@@ -56,12 +56,22 @@ $(function() {
 
   var tp = new TabParser();
   tab = tp.parse(tabString);
+  player = new Player;
 
   tabView = new TabView({
     el: $('#tab'),
     model: tab,
+    player: player
   });
 
+
+  $('#start').on('click', function() {
+    player.play();
+  });
+
+  $('#stop').on('click', function() {
+    player.stop();
+  });
   
   $(document).on('keypress', function(e) {
     if (e.keyCode == 106) { // j

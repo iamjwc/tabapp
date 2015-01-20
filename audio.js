@@ -17,6 +17,7 @@ Player = Backbone.Model.extend({
   play: function() {
     var tuning = [64, 59, 55, 50, 45, 40];
 
+    var self = this;
     var player = T('interval', { interval: this.interval() }, function(count) {
       var locals = tab.globalPositionToLocalPosition(count);
       
@@ -24,10 +25,19 @@ Player = Backbone.Model.extend({
       var column = measure.get('columns').at(locals.columnIndex);
       var notes = column.notesAtSubdivision(locals.localPosition);
 
+      var playedSomethingThisSD = false;
       for (var i = 0, n = notes.length; i < n; ++i) {
         var note = notes[i];
+
         pluck.noteOn(tuning[note.get('stringIndex')] + note.get('fret'), 200);
+
+        playedSomethingThisSD = true;
       }
+
+      if (playedSomethingThisSD) {
+        self.trigger('player:at', locals);
+      }
+
     });
 
     player.start();
@@ -43,15 +53,6 @@ Player = Backbone.Model.extend({
 });
 
 $(function() {
-  var player = new Player;
-
-  $('#start').on('click', function() {
-    player.play();
-  });
-
-  $('#stop').on('click', function() {
-    player.stop();
-  });
 });
 
 /*

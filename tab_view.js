@@ -10,6 +10,15 @@ var TabView = Backbone.View.extend({
 
     var self = this;
     this.model.get('measures').each(function(m) { self.addMeasure(m) });
+
+    player.on('player:at', function(args) {
+      $('.playHead').removeClass('playHead');
+
+      var mv = self.measureViews.at(args.measureIndex);
+      var cv = mv.columnViews.at(args.columnIndex);
+
+      cv.$('.subdivision' + args.localPosition).addClass('playHead');
+    });
   },
 
   render: function() {
