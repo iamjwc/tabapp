@@ -45,10 +45,6 @@
         clear: both;
       }
 
-      .hi {
-        background-color: #FF0;
-      }
-
       .cursor {
         background-color: #acf;
       }
@@ -60,7 +56,6 @@
         border-spacing: 0;
         border-collapse: collapse;
         float: left;
-        border-bottom: 1px solid #555;
 
         min-width: 50px;
         max-width: 1000px;
@@ -70,28 +65,49 @@
       }
 
       .playHead {
-        background-color: #f00;
+        font-weight: bold;
       }
 
       .measure > table:first-child {
-        border-left: 1px solid #555;
+        border-left: 1px solid #888;
       }
       #tab > .measure:last-child table:last-child {
-        border-right: 1px solid #555;
+        border-right: 1px solid #888;
       }
 
       thead th {
-        background-color: #555;
-        color: #fff;
+        background-color: #ddd;
+        color: #333;
+        font-weight: normal;
+        font-size: 8px;
+        padding: 2px;
+      }
+
+      thead th.subdivision0 {
+        font-weight: bold;
+      }
+      thead th.subdivision6 {
+        color: #999;
+      }
+      thead th.subdivision3,
+      thead th.subdivision9 {
+        color: #ccc;
       }
 
       td {
         margin: 0;
-        padding: 0;
-        width: 25px;
+        padding: 0 2px;
         text-align: center;
         background-image: url(stringbg.png);
         background-position-y: -1px;
+      }
+
+      .measure > table:first-child tr :first-child {
+        padding-left: 5px;
+      }
+
+      .measure > table:last-child tr :last-child {
+        padding-right: 5px;
       }
 
       .slide::before {
@@ -109,7 +125,7 @@
         content: ">";
       }
 
-      .column-trip8th td, .column-trip8th th { display: none; }
+      /*.column-trip8th td, .column-trip8th th { display: none; }
       .column-trip8th .subdivision0,
       .column-trip8th .subdivision4,
       .column-trip8th .subdivision8 {
@@ -152,13 +168,13 @@
           <th class="subdivision0">&nbsp;</th>
           <th class="subdivision1">&nbsp;</th>
           <th class="subdivision2">&nbsp;</th>
-          <th class="subdivision3">&nbsp;</th>
+          <th class="subdivision3">e</th>
           <th class="subdivision4">&nbsp;</th>
           <th class="subdivision5">&nbsp;</th>
-          <th class="subdivision6">&nbsp;</th>
+          <th class="subdivision6">&amp;</th>
           <th class="subdivision7">&nbsp;</th>
           <th class="subdivision8">&nbsp;</th>
-          <th class="subdivision9">&nbsp;</th>
+          <th class="subdivision9">a</th>
           <th class="subdivision10">&nbsp;</th>
           <th class="subdivision11">&nbsp;</th>
         </tr>

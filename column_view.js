@@ -88,6 +88,10 @@ var ColumnView = Backbone.View.extend({
     });
   },
 
+  setBeat: function(beat) {
+    this.$('thead th.subdivision0').text(beat);
+  },
+
   cellAtPosition: function(position) {
     return $($('td', this.$('tr')[position.y])[position.x - 1])
   },
