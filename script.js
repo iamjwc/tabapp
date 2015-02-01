@@ -9,6 +9,10 @@
  *   -  eighth
  *   .  sixtenth
  *   
+ *
+ * Hyphen:  -
+ * En dash: –
+ * Em dash: —
  */
 
 var tabString = [

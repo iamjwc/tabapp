@@ -1,13 +1,13 @@
 var env = T("perc", {a:100, r:500});
 var pluck = T("PluckGen", {env:env, mul:0.5}).play();
 
-var bpm = 120;
+var bpm = 240;
 
 Player = Backbone.Model.extend({
   MINUTE_IN_MS: 60000,
 
   defaults: {
-    bpm: 120,
+    bpm: 190,
     position: 0,
   },
 
