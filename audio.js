@@ -1,7 +1,3 @@
-var env = T("perc", {a:100, r:500});
-var pluck = T("PluckGen", {env:env, mul:0.5}).play();
-
-var bpm = 240;
 
 Player = Backbone.Model.extend({
   MINUTE_IN_MS: 60000,
@@ -12,16 +8,28 @@ Player = Backbone.Model.extend({
   },
 
   initialize: function() {
+    this.env   = T("perc", {a:100, r:500});
+    this.pluck = T("PluckGen", {
+      env: this.env,
+      mul:0.5
+    });
   },
 
   play: function() {
+    this.stop();
+
     var tuning = [64, 59, 55, 50, 45, 40];
 
     var self = this;
-    var player = T('interval', { interval: this.interval() }, function(count) {
+    this.player = T('interval', { interval: this.interval() }, function(count) {
       var locals = tab.globalPositionToLocalPosition(count);
-      
       var measure = tab.get('measures').at(locals.measureIndex);
+
+      if (!measure) {
+        self.stop();
+        return;
+      }
+
       var column = measure.get('columns').at(locals.columnIndex);
       var notes = column.notesAtSubdivision(locals.localPosition);
 
@@ -29,18 +37,27 @@ Player = Backbone.Model.extend({
       for (var i = 0, n = notes.length; i < n; ++i) {
         var note = notes[i];
 
-        pluck.noteOn(tuning[note.get('stringIndex')] + note.get('fret'), 200);
+        self.pluck.noteOn(tuning[note.get('stringIndex')] + note.get('fret'), 200);
 
-        playedSomethingThisSD = true;
+        //playedSomethingThisSD = true;
       }
 
-      if (playedSomethingThisSD) {
+      //if (playedSomethingThisSD) {
         self.trigger('player:at', locals);
-      }
+      //}
 
     });
 
-    player.start();
+    this.pluck.play();
+    this.player.start();
+  },
+
+  stop: function() {
+    if (this.player) {
+      this.player.stop();
+    }
+
+    this.trigger('player:stop', {});
   },
 
   /* Computes the amount of time between calls
@@ -50,9 +67,6 @@ Player = Backbone.Model.extend({
     return this.MINUTE_IN_MS / (this.get('bpm') * Column.SUBDIVISIONS);
   },
   
-});
-
-$(function() {
 });
 
 /*

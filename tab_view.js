@@ -19,6 +19,10 @@ var TabView = Backbone.View.extend({
 
       cv.$('.subdivision' + args.localPosition).addClass('playHead');
     });
+
+    player.on('player:stop', function(args) {
+      $('.playHead').removeClass('playHead');
+    });
   },
 
   render: function() {

@@ -161,7 +161,7 @@ var TabParser = Backbone.Model.extend({
     var subdivisions = this.guideLineTimingSubdivisions(guideLine);
 
     for (var i = 0, n = subcolumns.length; i < n; ++i) {
-      for (var j = 1, m = subcolumns[i].lines.length-1; j < m; ++j) {
+      for (var j = 0, m = subcolumns[i].lines.length-1; j < m; ++j) {
         var note = this.subColumnLineToNote(subcolumns[i].lines[j+1], {
           localPosition: subdivisions[i],
           stringIndex: j,
@@ -272,6 +272,10 @@ var TabParser = Backbone.Model.extend({
       var subColumns = this.splitMeasureIntoSubColumns(measures[i]);
       var subColumnsGroupedIntoColumns = this.subColumnsGroupedIntoColumns(subColumns);
       for (var j in subColumnsGroupedIntoColumns) {
+        if (i == "2" && j == "1") {
+          console.log("\n"+measures[i].toString());
+        }
+
         var c = this.buildColumnObjectFromSubColumns(subColumnsGroupedIntoColumns[j]);
         measureObject.get('columns').add(c);
       }
