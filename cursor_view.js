@@ -37,7 +37,6 @@ var CursorView = Backbone.View.extend({
 
   cellAtPosition: function(position) {
     var line = Math.floor(position.y / this.heightOfLine());
-    console.log(line)
 
     var stringIndex = (position.y % this.heightOfLine());
 
@@ -46,7 +45,7 @@ var CursorView = Backbone.View.extend({
     var cv;
     var x = position.x;
     for (var i in cvs) {
-      if (x > cvs[i].width()) {
+      if (x >= cvs[i].width()) {
         x -= cvs[i].width();
       } else {
         cv = cvs[i];

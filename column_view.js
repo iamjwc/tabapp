@@ -93,7 +93,7 @@ var ColumnView = Backbone.View.extend({
   },
 
   cellAtPosition: function(position) {
-    return $($('td', this.$('tr')[position.y])[position.x - 1])
+    return $($('td', this.$('tr')[position.y+1])[position.x])
   },
 
   width: function() {
