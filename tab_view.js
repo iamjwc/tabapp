@@ -4,13 +4,12 @@ var TabView = Backbone.View.extend({
   initialize: function() {
     this.measureViews = new Backbone.Collection([], { model: MeasureView });
 
-    this.cursor = new Position(0,0);
-
     this.listenTo(this.model.get('measures'), "add", this.addMeasure);
 
     var self = this;
     this.model.get('measures').each(function(m) { self.addMeasure(m) });
 
+    this.player = player;
     player.on('player:at', function(args) {
       $('.playHead').removeClass('playHead');
 
@@ -27,103 +26,8 @@ var TabView = Backbone.View.extend({
 
   render: function() {
     this.$el.attr('style', '');
-
-    // Remove current cursor and replace it.
-    //$('.cursor', this.el).removeClass('cursor');
-    //this.cellAtPosition(this.cursor).addClass('cursor');
-
-    //var self = this;
-    //this.measureViews.each(function(mv, idx) {
-    //  if (self.cursor.outerPosition.x == idx) {
-    //    mv.setCursor(self.cursor.innerPosition);
-    //  } else {
-    //    mv.setCursor(null);
-    //  }
-
-    //  mv.render();
-    //});
   },
 
-  cellAtPosition: function(position) {
-    var line = Math.floor(position.y / this.heightOfLine());
-    console.log(line)
-
-    var string = (position.y % this.heightOfLine());
-
-    var mvs = this.measureViewsByLine()[line - 1];
-
-    var mv;
-    var x = position.x;
-    for (var i in mvs) {
-      if (x > mvs[i].width()) {
-        x -= mvs[i].width();
-      } else {
-        mv = mvs[i];
-        break;
-      }
-    }
-
-    return mv.cellAtPosition(new Position(x, string));
-  },
-
-  numberOfLines: function() {
-    return this.measureViewsByLine().length;
-  },
-
-  /* Each line will have a different upper Y position value.
-   * Gets an array of measure views grouped by line number.
-   */
-  measureViewsByLine: function() {
-    var groupedMvs = [];
-    var currentY     = null;
-
-    this.measureViews.each(function(mv) {
-      var mvY = mv.el.offsetTop;
-
-      if (currentY == mvY) {
-        groupedMvs[groupedMvs.length-1].push(mv);
-      } else {
-        groupedMvs.push([mv]);
-      }
-
-      currentY = mvY;
-    });
-
-    return groupedMvs;
-  },
-
-  /* Finds the width of a line on the screen by adding
-   * up all of the widths of the measureViews found on
-   * a given line.
-   */
-  widthOfLine: function(i) {
-    var line = this.measureViewsByLine()[i];
-
-    return _.reduce(line, function(sum, mv) {
-      return sum += mv.width();
-    }, 0);
-  },
-
-  heightOfLine: function() {
-    return this.measureViewsByLine()[0][0].height();
-  },
-
-  moveLeft: function() {
-    this.cursor.x -= 1;
-    this.render();
-  },
-  moveRight: function() {
-    this.cursor.x += 1;
-    this.render();
-  },
-  moveUp: function() {
-    this.cursor.y -= 1;
-    this.render();
-  },
-  moveDown: function() {
-    this.cursor.y += 1;
-    this.render();
-  },
   setFret: function(fret) {
     var mv = this.measureViews.at(this.cursor.outerPosition.x);
     //this.

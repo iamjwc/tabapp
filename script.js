@@ -49,6 +49,7 @@ var tabString = [
   "|---------|---------|",
 ].join("\n");
 
+    $('body').keyup(this.goBack);
 
 $(function() {
   //var m = new Measure(4);
@@ -68,6 +69,11 @@ $(function() {
     player: player
   });
 
+  cursorView = new CursorView({
+    tabView: tabView,
+    el: $('body')
+  });
+
 
   $('#start').on('click', function() {
     player.play();
@@ -79,13 +85,13 @@ $(function() {
   
   $(document).on('keypress', function(e) {
     if (e.keyCode == 106) { // j
-      tabView.moveDown();
+      cursorView.moveDown();
     } else if (e.keyCode == 107) { // k
-      tabView.moveUp();
+      cursorView.moveUp();
     } else if (e.keyCode == 108) { // l
-      tabView.moveRight();
+      cursorView.moveRight();
     } else if (e.keyCode == 104) { // h
-      tabView.moveLeft();
+      cursorView.moveLeft();
     }
 
     tabView.render();
