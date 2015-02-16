@@ -3,7 +3,7 @@ Player = Backbone.Model.extend({
   MINUTE_IN_MS: 60000,
 
   defaults: {
-    bpm: 190,
+    bpm: 100,
     position: 0,
   },
 
@@ -37,14 +37,10 @@ Player = Backbone.Model.extend({
       for (var i = 0, n = notes.length; i < n; ++i) {
         var note = notes[i];
 
-        self.pluck.noteOn(tuning[note.get('stringIndex')] + note.get('fret'), 200);
-
-        //playedSomethingThisSD = true;
+        self.pluck.noteOn(tuning[note.get('stringIndex')] + note.get('fret'), 50);
       }
 
-      //if (playedSomethingThisSD) {
-        self.trigger('player:at', locals);
-      //}
+      self.trigger('player:at', locals);
 
     });
 

@@ -3,6 +3,7 @@ var CursorView = Backbone.View.extend({
     this.tab = $('#tab')
     this.position = { x: 0, y: 0 };
 
+    this.cursorWidth = 6;
     this.tabView = tabView;
 
     this.render();
@@ -82,11 +83,11 @@ var CursorView = Backbone.View.extend({
   },
 
   moveLeft: function() {
-    this.position.x -= 1;
+    this.position.x -= this.cursorWidth;
     this.render();
   },
   moveRight: function() {
-    this.position.x += 1;
+    this.position.x += this.cursorWidth;
     this.render();
   },
   moveUp: function() {
