@@ -3,8 +3,8 @@ var CursorView = Backbone.View.extend({
     this.tab = $('#tab')
     this.position = { x: 0, y: 0 };
 
-    this.cursorWidth = 6;
     this.tabView = tabView;
+    this.noteSelectorView = noteSelectorView;
 
     this.render();
   },
@@ -83,11 +83,11 @@ var CursorView = Backbone.View.extend({
   },
 
   moveLeft: function() {
-    this.position.x -= this.cursorWidth;
+    this.position.x -= this.noteSelectorView.selectedNoteWidth();
     this.render();
   },
   moveRight: function() {
-    this.position.x += this.cursorWidth;
+    this.position.x += this.noteSelectorView.selectedNoteWidth();
     this.render();
   },
   moveUp: function() {

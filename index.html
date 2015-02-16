@@ -24,6 +24,7 @@
     <script src="cursor_view.js"></script>
     <script src="tab_view.js"></script>
     <script src="timbre.js"></script>
+    <script src="note_selector_view.js"></script>
     <script src="audio.js"></script>
     <script src="script.js"></script>
 
@@ -152,11 +153,48 @@
     "trip16th-trip16th": [0,2,4,6,8,10],
   },
   */
+      #note-selector {
+        display: inline-block;
+        font-size: 14px;
+        padding: 10px;
+      }
+
+      #note-selector ul {
+        margin: 0;
+        padding: 10px;
+      }
+
+      #note-selector ul li {
+        padding: 10px;
+        display: inline;
+        border: 1px solid #ccc;
+        cursor: pointer;
+      }
+
+      #note-selector ul li.selected {
+        background-color: #ddd;
+      }
+
+      #note-selector ul li:hover {
+        border-color: #333;
+      }
+
+
     </style>
 
   </head>
 
   <body>
+
+  <div id="header">
+    <div id="note-selector">
+      <ul>
+        <li data-width="12">♩</li>
+        <li data-width="6">♫</li>
+        <li data-width="3">♬</li>
+      </ul>
+    </div>
+  </div>
 
   <div id="tab">
   </div>
