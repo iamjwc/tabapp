@@ -31,6 +31,9 @@ var CursorView = Backbone.View.extend({
     }
   },
 
+  setFret: function(val) {
+  },
+
   render: function() {
     this.updateX();
     this.updateLine();

@@ -3,7 +3,7 @@ Player = Backbone.Model.extend({
   MINUTE_IN_MS: 60000,
 
   defaults: {
-    bpm: 200,
+    bpm: 240,
     position: 0,
     shouldLoop: true,
   },
@@ -23,35 +23,23 @@ Player = Backbone.Model.extend({
   play: function() {
     this.stop();
 
-    var tuning = [64, 59, 55, 50, 45, 40];
-
     var self = this;
 
     var totalLength = tab.totalLength();
-    // Store 'modBy' for looping.
-    var modBy = 0;
+    var localCount = 0;
 
     this.player = T('interval', { interval: this.interval() }, function(count) {
-      if (count == modBy) {
-        if (this.get('shouldLoop')) {
-          modBy = totalLength;
+      if (localCount >= totalLength) {
+        if (self.get('shouldLoop')) {
+          localCount = 0
         } else {
-          modBy = 0;
+          self.stop();
+          return;
         }
       }
 
-      if (modBy) {
-        count = count % modBy;
-      }
-
-      var locals = tab.globalPositionToLocalPosition(count);
+      var locals = tab.globalPositionToLocalPosition(localCount);
       var measure = tab.get('measures').at(locals.measureIndex);
-
-      if (!measure) {
-        self.stop();
-        return;
-      }
-
       var column = measure.get('columns').at(locals.columnIndex);
       var notes = column.notesAtSubdivision(locals.localPosition);
 
@@ -67,10 +55,11 @@ Player = Backbone.Model.extend({
         columnIndex: locals.columnIndex,
         localPosition: locals.localPosition,
 
-        globalPosition: count,
+        globalPosition: localCount,
         totalLength: totalLength,
       });
 
+      localCount += 1;
     });
 
     this.pluck.play();
@@ -80,6 +69,7 @@ Player = Backbone.Model.extend({
   stop: function() {
     if (this.player) {
       this.player.stop();
+      this.player = null;
     }
 
     this.trigger('player:stop', {});
