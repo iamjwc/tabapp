@@ -1,6 +1,8 @@
 var CursorView = Backbone.View.extend({
   initialize: function() {
     this.tab = $('#tab')
+
+    this.line = 0;
     this.position = { x: 0, y: 0 };
 
     this.tabView = tabView;
@@ -9,10 +11,33 @@ var CursorView = Backbone.View.extend({
     this.render();
   },
 
+  updateLine: function() {
+    if (this.position.y < 0) {
+      this.line -= 1;
+      this.position.y = this.heightOfLine()-1;
+    } else if (this.position.y >= this.heightOfLine()) {
+      this.line += 1;
+      this.position.y = 0;
+    }
+  },
+
+  updateX: function() {
+    if (this.position.x >= this.widthOfLine(this.line)) {
+      this.position.x = this.position.x - this.widthOfLine(this.line);
+      this.line += 1;
+    } else if (this.position.x < 0 && this.line > 0) {
+      this.line -= 1;
+      this.position.x = this.widthOfLine(this.line) + this.position.x;
+    }
+  },
+
   render: function() {
+    this.updateX();
+    this.updateLine();
+
     this.$el.find('.cursor').removeClass('cursor');
 
-    var cell = this.cellAtPosition(this.position);
+    var cell = this.cellAtPosition(this.line, this.position);
     cell.addClass('cursor');
   },
 
@@ -20,10 +45,10 @@ var CursorView = Backbone.View.extend({
    * up all of the widths of the columnViews found on
    * a given line.
    */
-  widthOfLine: function(i) {
-    var line = this.columnViewsByLine()[i];
+  widthOfLine: function(line) {
+    var cvs = this.columnViewsByLine()[line];
 
-    return _.reduce(line, function(sum, cv) {
+    return _.reduce(cvs, function(sum, cv) {
       return sum += cv.width();
     }, 0);
   },
@@ -36,9 +61,7 @@ var CursorView = Backbone.View.extend({
     return this.columnViewsByLine().length;
   },
 
-  cellAtPosition: function(position) {
-    var line = Math.floor(position.y / this.heightOfLine());
-
+  cellAtPosition: function(line, position) {
     var stringIndex = (position.y % this.heightOfLine());
 
     var cvs = this.columnViewsByLine()[line];

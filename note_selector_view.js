@@ -6,8 +6,6 @@ var NoteSelectorView = Backbone.View.extend({
   },
 
   initialize: function() {
-    this.selectNextNote();
-    //this.$el.find('li:first-child').addClass('selected')
   },
 
   selectNote: function(e) {
@@ -22,6 +20,17 @@ var NoteSelectorView = Backbone.View.extend({
 
     if (!nextSibling.length) {
       nextSibling = this.$('li:first-child');
+    }
+
+    this.$('li').removeClass('selected')
+    this.$(nextSibling).addClass('selected')
+  },
+
+  selectPrevNote: function() {
+    var nextSibling = this.selected().prev()
+
+    if (!nextSibling.length) {
+      nextSibling = this.$('li:last-child');
     }
 
     this.$('li').removeClass('selected')

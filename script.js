@@ -122,24 +122,33 @@ $(function() {
   });
 
   $(document).on('keydown', function(e) {
-    if (e.keyCode == 9) { // \t
-      e.preventDefault();
-      noteSelectorView.selectNextNote();
-    }
-  });
+    e.preventDefault();
 
-  $(document).on('keypress', function(e) {
-    if (e.keyCode == 106) { // j
+    console.log(e.keyCode);
+
+    if (e.keyCode == 9) { // \t
+      if (e.shiftKey) {
+        noteSelectorView.selectPrevNote();
+      } else {
+        noteSelectorView.selectNextNote();
+      }
+    } else if (e.keyCode == 40) { // down
       cursorView.moveDown();
-    } else if (e.keyCode == 107) { // k
+    } else if (e.keyCode == 38) { // up
       cursorView.moveUp();
-    } else if (e.keyCode == 108) { // l
+    } else if (e.keyCode == 39) { // right
       cursorView.moveRight();
-    } else if (e.keyCode == 104) { // h
+    } else if (e.keyCode == 37) { // left
+      cursorView.moveLeft();
+    } else if (e.keyCode == 74) { // j
+      cursorView.moveDown();
+    } else if (e.keyCode == 75) { // k
+      cursorView.moveUp();
+    } else if (e.keyCode == 76) { // l
+      cursorView.moveRight();
+    } else if (e.keyCode == 72) { // h
       cursorView.moveLeft();
     }
-
-    tabView.render();
   });
 });
 
