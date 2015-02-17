@@ -25,10 +25,12 @@ var PlayerView = Backbone.View.extend({
   },
 
   start: function() {
+    this.$el.addClass('playing')
     player.play();
   },
 
   stop: function() {
+    this.$el.removeClass('playing')
     player.stop();
   },
 

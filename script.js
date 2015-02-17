@@ -201,10 +201,11 @@ $(function() {
       e.preventDefault();
     } else if (e.keyCode == 32) { // space
       if (player.player) {
-        player.stop();
+        playerView.stop();
       } else {
-        player.play();
+        playerView.start();
       }
+      e.preventDefault();
     } else if (e.keyCode == 40) { // down
       cursorView.moveDown();
       e.preventDefault();
