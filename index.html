@@ -153,30 +153,30 @@
     "trip16th-trip16th": [0,2,4,6,8,10],
   },
   */
-      #note-selector {
+      #player, #note-selector {
         display: inline-block;
         font-size: 14px;
         padding: 10px;
       }
 
-      #note-selector ul {
+      #player, #note-selector ul {
         margin: 0;
         padding: 10px;
       }
 
-      #note-selector ul li {
+      #player ul li, #note-selector ul li {
         padding: 10px;
         display: inline;
         border: 1px solid #ccc;
         cursor: pointer;
       }
 
-      #note-selector ul li.selected {
-        background-color: #ddd;
+      #player ul li:hover, #note-selector ul li:hover {
+        border-color: #333;
       }
 
-      #note-selector ul li:hover {
-        border-color: #333;
+      #note-selector ul li.selected {
+        background-color: #ddd;
       }
 
 
@@ -187,6 +187,13 @@
   <body>
 
   <div id="header">
+    <div id="player">
+      <ul>
+        <li id="start">&#9654;</li>
+        <li id="stop">&#9724;</li>
+      </ul>
+    </div>
+
     <div id="note-selector">
       <ul>
         <li data-width="12">♩</li>
@@ -199,7 +206,6 @@
   <div id="tab">
   </div>
 
-  <a href="#" id="start">Start</a> <a href="#" id="stop">Stop</a>
 
   <!-- Column and string templates should have 12 (Column.SUBDIVISIONS) columns. -->
   <script type="text/template" id="columnTemplate">

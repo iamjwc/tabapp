@@ -3,8 +3,9 @@ Player = Backbone.Model.extend({
   MINUTE_IN_MS: 60000,
 
   defaults: {
-    bpm: 100,
+    bpm: 200,
     position: 0,
+    shouldLoop: true,
   },
 
   initialize: function() {
@@ -21,7 +22,19 @@ Player = Backbone.Model.extend({
     var tuning = [64, 59, 55, 50, 45, 40];
 
     var self = this;
+
+    var totalLength = tab.totalLength();
+    // Store 'modBy' for looping.
+    var modBy = 0;
+    if (this.get('shouldLoop')) {
+      modBy = totalLength;
+    }
+
     this.player = T('interval', { interval: this.interval() }, function(count) {
+      if (modBy) {
+        count = count % modBy;
+      }
+
       var locals = tab.globalPositionToLocalPosition(count);
       var measure = tab.get('measures').at(locals.measureIndex);
 

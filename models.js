@@ -24,7 +24,7 @@ var Note = Backbone.Model.extend({
 
     if (!attributes.localPosition) {
       return "must specify localPosition";
-    } else if (attributes.localPosition < 0 || attributes.localPosition > Column.SUBDIVISTIONS) {
+    } else if (attributes.localPosition < 0 || attributes.localPosition > Column.SUBDIVISIONS) {
       return "invalid localPosition";
     }
   },
@@ -221,6 +221,13 @@ var Tab = Backbone.Model.extend({
     this.set('measures', new Backbone.Collection([], {
       model: Measure,
     }));
+  },
+
+  // Returns the total number of subdivisions in the entire tab.
+  totalLength: function() {
+    return tab.get('measures').reduce(function(sum, measure) {
+      return sum + measure.get('columns').length * Column.SUBDIVISIONS;
+    }, 0);
   },
 
   /* Takes a global "subdivision position" and returns
