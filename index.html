@@ -26,6 +26,7 @@
     <script src="timbre.js"></script>
     <script src="note_selector_view.js"></script>
     <script src="audio.js"></script>
+    <script src="player_view.js"></script>
     <script src="script.js"></script>
 
     <style>
@@ -175,7 +176,7 @@
         border-color: #333;
       }
 
-      #note-selector ul li.selected {
+      #player ul li.selected, #note-selector ul li.selected {
         background-color: #ddd;
       }
 
@@ -189,16 +190,18 @@
   <div id="header">
     <div id="player">
       <ul>
-        <li class="start">&#9654;</li>
-        <li class="stop">&#9724;</li>
+        <li class="start" title="Play tab">&#9654;</li>
+        <li class="stop" title="Stop playing tab">&#9724;</li>
+        <li class="progress"><span><progress max="100" value="0"></progress></span>&nbsp;</li>
+        <li class="loop" title="Loop the playback">↻</li>
       </ul>
     </div>
 
     <div id="note-selector">
       <ul>
-        <li data-width="12">♩</li>
-        <li data-width="6" class='selected'>♫</li>
-        <li data-width="3">♬</li>
+        <li data-width="12" title="Move cursor 1 quarter note at a time">♩</li>
+        <li data-width="6"  title="Move cursor 1 eighth note at a time" class='selected'>♫</li>
+        <li data-width="3"  title="Move cursor 1 sixteenth note at a time">♬</li>
       </ul>
     </div>
   </div>
