@@ -3,7 +3,7 @@ Player = Backbone.Model.extend({
   MINUTE_IN_MS: 60000,
 
   defaults: {
-    bpm: 240,
+    bpm: 220,
     position: 0,
     shouldLoop: true,
   },

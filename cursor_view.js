@@ -1,4 +1,8 @@
 var CursorView = Backbone.View.extend({
+  events: {
+    'click td': 'clickCell'
+  },
+
   initialize: function() {
     this.tab = $('#tab')
 
@@ -9,6 +13,41 @@ var CursorView = Backbone.View.extend({
     this.noteSelectorView = noteSelectorView;
 
     this.render();
+  },
+
+  clickCell: function(e) {
+   cell = e.target;
+   console.log(this.lineFromTableCell(cell));
+   this.positionFromTableCell(cell);
+  },
+
+  lineFromTableCell: function(cell) {
+    var tableYPositions = _(this.$('table').toArray()).
+      chain().
+      map(function(t) { return t.offsetTop }).
+      sortBy(function(num){ return num; }).
+      uniq().
+      value();
+
+    
+    // Gets the global top coordinate of the cell clicked.
+    var cellTop = $(cell).offset().top
+
+    var line = 0;
+    while (tableYPositions[line+1] <= cellTop) {
+      line += 1;
+    }
+
+    return line;
+  },
+
+  positionFromTableCell: function(cell) {
+    cvs = this.columnViewsByLine()[this.lineFromTableCell(cell)];
+
+    parentCv = _(cvs).find(function(cv) { return cv.$(cell).length > 0; });
+    var indexOfCv = cvs.indexOf(parentCv);
+
+    positionX = indexOfCv * Column.SUBDIVISIONS;
   },
 
   updateLine: function() {
