@@ -1,3 +1,13 @@
 Use karma js
 
 http://mochajs.org/
+
+Needs
+-------
+* Ability to change tempo
+* Need to implement a way to have a kick off to a song. This should be repeated when looping entire track. 
+* Ability to define chords and rhythm patterns. This would allow for quick custom backing tracks.
+  | + + + + | + + + + | + + + |
+  | Am      | Am      | F7    |
+
+  Am: x02210

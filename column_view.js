@@ -74,7 +74,9 @@ var ColumnView = Backbone.View.extend({
     var stringTemplate = document.getElementById('stringTemplate').innerHTML;
 
     for (var i = 0, n = tab.get('numberOfStrings'); i < n; ++i) {
-      $('tbody', column).append($(stringTemplate));
+      var string = $(stringTemplate);
+      string.data('string-index', i)
+      $('tbody', column).append(string)
     }
 
     this.setElement(column);

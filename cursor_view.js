@@ -17,10 +17,17 @@ var CursorView = Backbone.View.extend({
 
   clickCell: function(e) {
    cell = e.target;
-   console.log(this.lineFromTableCell(cell));
-   this.positionFromTableCell(cell);
+   //console.log(this.lineFromTableCell(cell));
+
+   this.line = this.lineFromTableCell(cell);
+   this.position = this.positionFromTableCell(cell);
+
+   this.render();
   },
 
+  /* lineFromTableCell takes a <td> object and will return which
+   * screen line it appears on.
+   */
   lineFromTableCell: function(cell) {
     var tableYPositions = _(this.$('table').toArray()).
       chain().
@@ -47,7 +54,12 @@ var CursorView = Backbone.View.extend({
     parentCv = _(cvs).find(function(cv) { return cv.$(cell).length > 0; });
     var indexOfCv = cvs.indexOf(parentCv);
 
-    positionX = indexOfCv * Column.SUBDIVISIONS;
+    var cellJQueryObject = $(cell);
+
+    var positionX = indexOfCv * Column.SUBDIVISIONS + Number(cellJQueryObject.data('subdivision'));
+    var positionY = cellJQueryObject.parent('tr').data('string-index');
+
+    return { y: positionY, x: positionX };
   },
 
   updateLine: function() {
