@@ -20,18 +20,29 @@ Player = Backbone.Model.extend({
     this.set("shouldLoop", !this.get("shouldLoop"));
   },
 
-  play: function() {
+  play: function(range) {
     this.stop();
 
     var self = this;
 
     var totalLength = tab.totalLength();
-    var localCount = 0;
+
+    var startingPosition, endingPosition;
+
+    if (range) {
+      startingPosition = range[0];
+      endingPosition = range[1];
+    } else {
+      startingPosition = 0;
+      endingPosition = totalLength;
+    }
+
+    var localCount = startingPosition;
 
     this.player = T('interval', { interval: this.interval() }, function(count) {
-      if (localCount >= totalLength) {
+      if (localCount >= endingPosition) {
         if (self.get('shouldLoop')) {
-          localCount = 0
+          localCount = startingPosition
         } else {
           self.stop();
           return;
@@ -55,8 +66,8 @@ Player = Backbone.Model.extend({
         columnIndex: locals.columnIndex,
         localPosition: locals.localPosition,
 
-        globalPosition: localCount,
-        totalLength: totalLength,
+        globalPosition: localCount-startingPosition,
+        totalLength: (endingPosition - startingPosition),
       });
 
       localCount += 1;

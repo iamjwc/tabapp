@@ -34,6 +34,44 @@ var CursorView = Backbone.View.extend({
     this.renderSelection();
   },
 
+  /* Returns the visual selection as an array of global
+   * positions, sorted ascending.
+   *
+   * selectionAsGlobalRange() => [12,84];
+   */
+  selectionAsGlobalRange: function() {
+    if (!this.selection) {
+      return
+    }
+
+    this.sortSelectionInPlace();
+
+    var allTables = this.$('table');
+
+    var startColumn = this.$(this.selection[0].cell).parents('table')[0];
+    var endColumn = this.$(this.selection[1].cell).parents('table')[0];
+
+    var startIndex = _(allTables).indexOf(startColumn);
+    var endIndex  = _(allTables).indexOf(endColumn)+1;
+
+    var columnViews = this.columnViews();
+
+    var globalRangeStart = _(columnViews).
+      chain().
+      first(startIndex).
+      reduce(function(sum, cv) { return sum + cv.width() }, 0).
+      value();
+
+    var selectionGlobalWidth = _(columnViews).
+      chain().
+      last(allTables.length - startIndex).
+      first(endIndex - startIndex).
+      reduce(function(sum, cv) { return sum + cv.width() }, 0).
+      value();
+
+    return [globalRangeStart, globalRangeStart + selectionGlobalWidth];
+  },
+
   mousedownCell: function(e) {
     // Prevents selection
     e.preventDefault();
@@ -185,12 +223,12 @@ var CursorView = Backbone.View.extend({
     var endColumn = this.$(this.selection[1].cell).parents('table')[0];
 
     var startIndex = _(allTables).indexOf(startColumn);
-    var endIndex  = _(allTables).indexOf(endColumn);
+    var endIndex  = _(allTables).indexOf(endColumn)+1;
 
     var selectedTables = _(allTables).
       chain().
       last(allTables.length - startIndex).
-      first(endIndex - startIndex+1).
+      first(endIndex - startIndex).
       value();
 
     this.$(selectedTables).addClass('selection');
@@ -247,6 +285,10 @@ var CursorView = Backbone.View.extend({
     return cv.cellAtPosition(new Position(x, stringIndex));
   },
 
+  columnViews: function() {
+    return _.flatten(this.tabView.measureViews.map(function(mv) { return mv.columnViews.models }));
+  },
+
   /* Each line will have a different upper Y position value.
    * Gets an array of column views grouped by line number.
    */
@@ -254,10 +296,7 @@ var CursorView = Backbone.View.extend({
     var groupedCvs = [];
     var currentY     = null;
 
-    var columnViews = this.tabView.measureViews.map(function(mv) { return mv.columnViews.models });
-    columnViews = _.flatten(columnViews);
-
-    _.each(columnViews, function(cv) {
+    _.each(this.columnViews(), function(cv) {
       var cvY = cv.el.offsetTop;
 
       if (currentY == cvY) {

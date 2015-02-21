@@ -25,8 +25,10 @@ var PlayerView = Backbone.View.extend({
   },
 
   start: function() {
-    this.$el.addClass('playing')
-    player.play();
+    this.$el.addClass('playing');
+    var range = cursorView.selectionAsGlobalRange();
+
+    player.play(range);
   },
 
   stop: function() {

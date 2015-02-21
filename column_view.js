@@ -75,7 +75,8 @@ var ColumnView = Backbone.View.extend({
 
     for (var i = 0, n = tab.get('numberOfStrings'); i < n; ++i) {
       var string = $(stringTemplate);
-      string.data('string-index', i)
+      string.data('string-index', i);
+      string.addClass("stringIndex" + i);
       $('tbody', column).append(string)
     }
 
