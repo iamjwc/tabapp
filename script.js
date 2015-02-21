@@ -374,10 +374,10 @@ $(function() {
   //tuning = [76, 69, 62, 55];
   //tab = tp.parse(tabString);
   //tab = tp.parse(boomChuckInA);
-  //tab = tp.parse(squirrelhunters);
+  tab = tp.parse(squirrelhunters);
   //tab = tp.parse(downAtTheMouthOfOldStinson);
   //tab = tp.parse(bigSandyRiver);
-  tab = tp.parse(slipstreamChords);
+  //tab = tp.parse(slipstreamChords);
   //tab = tp.parse(tennesseeMountainFoxChaseMandolin);
   player = new Player;
 

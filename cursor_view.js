@@ -113,6 +113,9 @@ var CursorView = Backbone.View.extend({
     this.line = this.lineFromTableCell(cell);
     this.position = this.positionFromTableCell(cell);
 
+    // Snap to closest previous note.
+    this.position.x -= this.position.x % this.noteSelectorView.selectedNoteWidth();
+
     this.renderCursor();
   },
 
