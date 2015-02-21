@@ -1,6 +1,10 @@
 var CursorView = Backbone.View.extend({
   events: {
-    'click td': 'clickCell'
+    'click td': 'clickCell',
+
+    'mousedown td': 'mousedownCell',
+    'mouseup td':   'mouseupCell',
+    'mouseover td': 'mouseoverCell',
   },
 
   initialize: function() {
@@ -12,17 +16,66 @@ var CursorView = Backbone.View.extend({
     this.tabView = tabView;
     this.noteSelectorView = noteSelectorView;
 
-    this.render();
+    this.renderCursor();
+  },
+
+  clearCursor: function() {
+    this.line = this.dragStartLine;
+    this.position = this.dragStartPosition;
+
+    this.$el.find('.cursor').removeClass('cursor');
+  },
+
+  clearSelection: function() {
+    this.dragStartCell = null;
+    this.dragStartLine = null;
+    this.dragStartPosition = null;
+    this.selection = null;
+    this.renderSelection();
+  },
+
+  mousedownCell: function(e) {
+    // Prevents selection
+    e.preventDefault();
+
+    var cell = e.target;
+
+    this.dragStartCell = cell;
+    this.dragStartLine = this.lineFromTableCell(cell);
+    this.dragStartPosition = this.positionFromTableCell(cell);
+  },
+
+  mouseoverCell: function(e) {
+    if (this.dragStartPosition) {
+      this.clearCursor();
+
+      var cell = e.target;
+
+      this.selection = [
+        { cell: this.dragStartCell, line: this.dragStartLine, x: this.dragStartPosition.x },
+        { cell: cell, line: this.lineFromTableCell(cell), x: this.positionFromTableCell(cell).x },
+      ]
+
+      this.renderSelection();
+    }
+  },
+
+  mouseupCell: function(e) {
+    this.dragStartCell = null;
+    this.dragStartLine = null;
+    this.dragStartPosition = null;
   },
 
   clickCell: function(e) {
-   cell = e.target;
-   //console.log(this.lineFromTableCell(cell));
+    // We are not dragging on a click.
+    this.clearSelection();
 
-   this.line = this.lineFromTableCell(cell);
-   this.position = this.positionFromTableCell(cell);
+    var cell = e.target;
 
-   this.render();
+    this.line = this.lineFromTableCell(cell);
+    this.position = this.positionFromTableCell(cell);
+
+    this.renderCursor();
   },
 
   /* lineFromTableCell takes a <td> object and will return which
@@ -85,7 +138,9 @@ var CursorView = Backbone.View.extend({
   setFret: function(val) {
   },
 
-  render: function() {
+  renderCursor: function() {
+    this.clearSelection();
+
     this.updateX();
     this.updateLine();
 
@@ -113,6 +168,64 @@ var CursorView = Backbone.View.extend({
 
   numberOfLines: function() {
     return this.columnViewsByLine().length;
+  },
+
+  renderSelection: function() {
+    this.$el.find('.selection').removeClass('selection');
+
+    if (!this.selection) {
+      return;
+    }
+
+    this.sortSelectionInPlace();
+
+    var allTables = this.$('table');
+
+    var startColumn = this.$(this.selection[0].cell).parents('table')[0];
+    var endColumn = this.$(this.selection[1].cell).parents('table')[0];
+
+    var startIndex = _(allTables).indexOf(startColumn);
+    var endIndex  = _(allTables).indexOf(endColumn);
+
+    var selectedTables = _(allTables).
+      chain().
+      last(allTables.length - startIndex).
+      first(endIndex - startIndex+1).
+      value();
+
+    this.$(selectedTables).addClass('selection');
+  },
+
+  /* Sorts the selection in place so that the selection
+   * coordinates are always in order.
+   */
+  sortSelectionInPlace: function() {
+    if (!this.selection) {
+      return;
+    }
+
+    if (this.selection[0].line < this.selection[1].line) {
+      // We're sorted.
+      return;
+    }
+
+    if (this.selection[0].line > this.selection[1].line) {
+      var tmp = this.selection[0];
+      this.selection[0] = this.selection[1];
+      this.selection[1] = tmp;
+
+      // We're sorted.
+      return;
+    }
+
+    if (this.selection[0].x > this.selection[1].x) {
+      var tmp = this.selection[0];
+      this.selection[0] = this.selection[1];
+      this.selection[1] = tmp;
+
+      // We're sorted.
+      return;
+    }
   },
 
   cellAtPosition: function(line, position) {
@@ -161,18 +274,18 @@ var CursorView = Backbone.View.extend({
 
   moveLeft: function() {
     this.position.x -= this.noteSelectorView.selectedNoteWidth();
-    this.render();
+    this.renderCursor();
   },
   moveRight: function() {
     this.position.x += this.noteSelectorView.selectedNoteWidth();
-    this.render();
+    this.renderCursor();
   },
   moveUp: function() {
     this.position.y -= 1;
-    this.render();
+    this.renderCursor();
   },
   moveDown: function() {
     this.position.y += 1;
-    this.render();
+    this.renderCursor();
   },
 })
