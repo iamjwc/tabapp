@@ -15,6 +15,7 @@ describe("Serializers.MeasureSerializer", function() {
     });
 
     it("should output an empty measure", function() {
+      pending();
       var output = Serializers.MeasureSerializer.toString(measure);
 
       expect(output).toEqual([

@@ -22,9 +22,9 @@ var Note = Backbone.Model.extend({
       }
     }
 
-    if (!attributes.localPosition) {
+    if (attributes.localPosition == null) {
       return "must specify localPosition";
-    } else if (attributes.localPosition < 0 || attributes.localPosition > Column.SUBDIVISIONS) {
+    } else if (attributes.localPosition < 0 || attributes.localPosition >= Column.SUBDIVISIONS) {
       return "invalid localPosition";
     }
   },

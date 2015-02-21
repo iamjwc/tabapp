@@ -25,7 +25,9 @@
   },
 
   notesAtSubdivision: function(i) {
-    return this.get('notes').where({localPosition: i});
+    return this.get('notes').where({
+      localPosition: i
+    });
   },
 }, {
   SUBDIVISIONS: 12,
