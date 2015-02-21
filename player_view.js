@@ -5,6 +5,7 @@ var PlayerView = Backbone.View.extend({
     'click .start': 'start',
     'click .stop': 'stop',
     'click .loop': 'loop',
+    'input input.tempo': 'updateTempo',
   },
 
   initialize: function() {
@@ -20,6 +21,13 @@ var PlayerView = Backbone.View.extend({
     player.on('player:stop', function(args) {
       self.$('progress').attr('value', 0);
     });
+
+    this.render();
+  },
+
+  updateTempo: function() {
+    var tempo = this.$('input.tempo').val();
+    this.player.set('bpm', tempo);
 
     this.render();
   },
@@ -42,6 +50,8 @@ var PlayerView = Backbone.View.extend({
   },
 
   render: function() {
+    this.$('.bpm-label').text(this.player.get('bpm') + " BPM");
+
     if (player.get('shouldLoop')) {
       this.$('.loop').addClass('selected');
     } else {

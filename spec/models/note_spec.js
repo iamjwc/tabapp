@@ -5,7 +5,6 @@ describe("Note", function() {
     note = new Note
   });
 
-
   describe("#validations", function() {
     var validAttributes;
 

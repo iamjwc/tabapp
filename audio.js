@@ -3,7 +3,7 @@ Player = Backbone.Model.extend({
   MINUTE_IN_MS: 60000,
 
   defaults: {
-    bpm: 200,
+    bpm: 100,
     position: 0,
     shouldLoop: true,
   },
@@ -13,6 +13,13 @@ Player = Backbone.Model.extend({
     this.pluck = T("PluckGen", {
       env: this.env,
       mul:0.5
+    });
+
+    var self = this;
+    this.on('change:bpm', function() {
+      if (self.player) {
+        self.player.interval = self.interval();
+      }
     });
   },
 
@@ -58,7 +65,7 @@ Player = Backbone.Model.extend({
       for (var i = 0, n = notes.length; i < n; ++i) {
         var note = notes[i];
 
-        self.pluck.noteOn(tuning[note.get('stringIndex')] + note.get('fret'), 50);
+        self.pluck.noteOn(tuning[note.get('stringIndex')] + note.get('fret'), note.get('width') * self.player.interval);
       }
 
       self.trigger('player:at', {
@@ -90,7 +97,13 @@ Player = Backbone.Model.extend({
    * to the function to play audio.
    */
   interval: function() {
-    return this.MINUTE_IN_MS / (this.get('bpm') * Column.SUBDIVISIONS);
+    /* I'm multiplying the BPM by 2 here because 100bpm
+     * seems like what I'm used to for an average BPM,
+     * not 200bpm. 100 looks correct, 200 sounds correct,
+     * thus, multiply this by 2. Maybe someone smarter
+     * than I can explain this.
+     */
+    return this.MINUTE_IN_MS / (2 * this.get('bpm') * Column.SUBDIVISIONS);
   },
   
 });

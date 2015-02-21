@@ -10,6 +10,11 @@ var Note = Backbone.Model.extend({
     // I'm not a fan of this design decision, but its easy and I'm
     // not really sure how to do it in a better way with Backbone.
     localPosition: null,
+
+    /* Width is the amount of subdivisions the note should be
+     * played for. This will be constant for now.
+     */
+    width: 4,
   },
 
   validate: function(attributes) {
