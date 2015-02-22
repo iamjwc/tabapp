@@ -370,14 +370,14 @@ $(function() {
   //var mv = new Measureview(m, $('#measure-prototype'));
 
   var tp = new TabParser();
-  tuning = [64, 59, 55, 50, 45, 40];
-  //tuning = [76, 69, 62, 55];
+  //tuning = [64, 59, 55, 50, 45, 40];
+  tuning = [76, 69, 62, 55];
   //tab = tp.parse(tabString);
   //tab = tp.parse(boomChuckInA);
   //tab = tp.parse(squirrelhunters);
-  tab = tp.parse(snowflakeReel);
+  //tab = tp.parse(snowflakeReel);
   //tab = tp.parse(downAtTheMouthOfOldStinson);
-  //tab = tp.parse(bigSandyRiver);
+  tab = tp.parse(bigSandyRiver);
   //tab = tp.parse(slipstreamChords);
   //tab = tp.parse(tennesseeMountainFoxChaseMandolin);
   player = new Player;
