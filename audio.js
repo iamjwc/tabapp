@@ -36,6 +36,13 @@ Player = Backbone.Model.extend({
 
     var startingPosition, endingPosition;
 
+    // Start using note.get('width') instead of hardcoding 4.
+    this.env   = T("perc", {a:100, r:4*this.interval()});
+    this.pluck = T("PluckGen", {
+      env: this.env,
+      mul:0.5
+    });
+
     if (range) {
       startingPosition = range[0];
       endingPosition = range[1];
