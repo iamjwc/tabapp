@@ -14,8 +14,10 @@ var PlayerView = Backbone.View.extend({
     var self = this;
 
     player.on('player:at', function(args) {
-      self.$('progress').attr('max', args.totalLength);
-      self.$('progress').attr('value', args.globalPosition);
+      if (args.globalPosition % 2 == 0) {
+        self.$('progress').attr('max', args.totalLength);
+        self.$('progress').attr('value', args.globalPosition);
+      }
     });
 
     player.on('player:stop', function(args) {

@@ -11,12 +11,14 @@ var TabView = Backbone.View.extend({
 
     this.player = player;
     player.on('player:at', function(args) {
-      $('.playHead').removeClass('playHead');
+      if (args.globalPosition % 2 == 0) {
+        $('.playHead').removeClass('playHead');
 
-      var mv = self.measureViews.at(args.measureIndex);
-      var cv = mv.columnViews.at(args.columnIndex);
+        var mv = self.measureViews.at(args.measureIndex);
+        var cv = mv.columnViews.at(args.columnIndex);
 
-      cv.$('.subdivision' + args.localPosition).addClass('playHead');
+        cv.$('.subdivision' + args.localPosition).addClass('playHead');
+      }
     });
 
     player.on('player:stop', function(args) {

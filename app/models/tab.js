@@ -1,4 +1,8 @@
 var Tab = Backbone.Model.extend({
+  defaults: {
+    capo: 0
+  },
+
   initialize: function() {
     this.set('measures', new Backbone.Collection([], {
       model: Measure,

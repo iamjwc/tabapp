@@ -79,7 +79,6 @@ Player = Backbone.Model.extend({
         measureIndex: locals.measureIndex,
         columnIndex: locals.columnIndex,
         localPosition: locals.localPosition,
-
         globalPosition: localCount-startingPosition,
         totalLength: (endingPosition - startingPosition),
       });
