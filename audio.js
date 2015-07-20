@@ -72,7 +72,8 @@ Player = Backbone.Model.extend({
       for (var i = 0, n = notes.length; i < n; ++i) {
         var note = notes[i];
 
-        self.pluck.noteOn(tuning[note.get('stringIndex')] + note.get('fret'), note.get('width') * self.player.interval);
+        var noteVal = tuning[note.get('stringIndex')] + note.get('fret') + Number(tab.get('capo'));
+        self.pluck.noteOn(noteVal, note.get('width') * self.player.interval);
       }
 
       self.trigger('player:at', {

@@ -28,6 +28,18 @@ var TabView = Backbone.View.extend({
 
   render: function() {
     this.$el.attr('style', '');
+
+    if (this.model.get('title')) {
+      this.$('.title')
+        .show()
+        .text(this.model.get('title'));
+    }
+
+    if (this.model.get('artist')) {
+      this.$('.artist')
+        .show()
+        .text(this.model.get('artist'));
+    }
   },
 
   setFret: function(fret) {

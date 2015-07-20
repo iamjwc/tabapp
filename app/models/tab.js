@@ -1,6 +1,7 @@
 var Tab = Backbone.Model.extend({
   defaults: {
-    capo: 0
+    capo: 0,
+    tempo: 100,
   },
 
   initialize: function() {

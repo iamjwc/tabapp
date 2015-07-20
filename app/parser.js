@@ -248,7 +248,41 @@ var TabParser = Backbone.Model.extend({
     }, []);
   },
 
+
+  /*
+   * Split the metadata string and tab string into
+   * two pieces.
+   */
+  splitMetadataAndTab: function(tabString) {
+    var arr = tabString.split("\n");
+
+    var i = _.findIndex(arr, function(line) {
+      return line.match(/^\|/);
+    })
+
+    return {
+      metadataString: _.head(arr, i-1).join("\n"),
+      tabString:      _.tail(arr, i).join("\n"),
+    }
+  },
+
+  parseMetadata: function(metadataString) {
+    var titleAndArtist = metadataString.split("\n")[0].split(" by ")
+
+    return {
+      title: titleAndArtist[0],
+      artist: titleAndArtist[1],
+    }
+  },
+
   parse: function(tabString) {
+    var h = this.splitMetadataAndTab(tabString);
+    console.log(h);
+
+    var metadataString = h.metadataString;
+    var metadata = this.parseMetadata(metadataString);
+
+    var tabString = h.tabString;
     var linearTab = this.linearizeTab(tabString);
 
     // Trash any ">" before we go further, because they are
@@ -258,6 +292,8 @@ var TabParser = Backbone.Model.extend({
     var guideLine = linearTab.lines[0];
 
     var tabObject = new Tab({
+      title: metadata.title,
+      artist: metadata.artist,
       numberOfStrings: this.numberOfStrings(linearTab),
     });
 
