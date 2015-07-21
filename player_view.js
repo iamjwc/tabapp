@@ -6,7 +6,7 @@ var PlayerView = Backbone.View.extend({
     'click .stop': 'stop',
     'click .loop': 'loop',
     'input input.tempo': 'updateTempo',
-    'input input.capo': 'updateCapo',
+    'input input.transposition': 'updateTransposition',
   },
 
   initialize: function() {
@@ -35,9 +35,9 @@ var PlayerView = Backbone.View.extend({
     this.render();
   },
 
-  updateCapo: function() {
-    var capo = this.$('input.capo').val();
-    tab.set('capo', capo);
+  updateTransposition: function() {
+    var transposition = this.$('input.transposition').val();
+    tab.set('transposition', transposition);
 
     this.render();
   },
@@ -61,7 +61,7 @@ var PlayerView = Backbone.View.extend({
 
   render: function() {
     this.$('.bpm-label').text(this.player.get('bpm') + " BPM");
-    this.$('.capo-label').text("Capo " + tab.get('capo'));
+    this.$('.transposition-label').text("Transposition " + tab.get('transposition'));
 
     if (player.get('shouldLoop')) {
       this.$('.loop').addClass('selected');

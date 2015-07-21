@@ -37,11 +37,49 @@ Player = Backbone.Model.extend({
     var startingPosition, endingPosition;
 
     // Start using note.get('width') instead of hardcoding 4.
-    this.env   = T("perc", {a:100, r:4*this.interval()});
-    this.pluck = T("PluckGen", {
-      env: this.env,
-      mul:0.5
-    });
+    //this.env   = T("perc", {a:100, r:4*this.interval()});
+    //this.pluck = T("PluckGen", {
+    //  env: this.env,
+    //  mul:0.5
+    //});
+
+    this.glide = T("param");
+    var wave = T("osc", {
+      //wave: "tri",
+      
+      //wave: "konami",
+      //wave: "saw",
+      //fb: "konami",
+      wave: "wavc(0200080f)",
+      //mul: 0.5,
+      freq: this.glide,
+    })
+    wave = T("comp", {thresh:-8, knee:300, ratio:204, gain:10}, wave);
+    wave = T("eq", { params:{hpf:[50,1],lmf:[828,1.8,18.3],mf:[2400,2.2,-24,5],lpf:[5000,1.1]} }, wave);
+
+    this.env = T("adsr", {
+      // Attack
+      a:0,
+    
+      // Delay
+      d:300,
+      //    d: 0,
+    
+      // Sustain
+      s:0,
+    
+      // Release
+      r:50
+      //    r: 0,
+    
+    }, wave);
+
+
+
+
+    // Get a Hz frequency from midi number with this .
+    // midicps.at(69) # => 440.0
+    var midicps = T("midicps");
 
     if (range) {
       startingPosition = range[0];
@@ -72,8 +110,19 @@ Player = Backbone.Model.extend({
       for (var i = 0, n = notes.length; i < n; ++i) {
         var note = notes[i];
 
-        var noteVal = tuning[note.get('stringIndex')] + note.get('fret') + Number(tab.get('capo'));
-        self.pluck.noteOn(noteVal, note.get('width') * self.player.interval);
+        var noteVal = tuning[note.get('stringIndex')] + note.get('fret') + Number(tab.get('transposition'));
+
+        self.glide.set({
+          value: midicps.at(noteVal),
+        });
+        //self.glide.welTo(
+        //  midicps.at(noteVal+3),
+        //  "100ms"
+        //  //self.interval()// + "ms"
+        //);
+        self.env.bang();
+
+        //self.pluck.noteOn(noteVal, note.get('width') * self.player.interval);
       }
 
       self.trigger('player:at', {
@@ -87,12 +136,17 @@ Player = Backbone.Model.extend({
       localCount += 1;
     });
 
-    this.pluck.play();
+    this.fft = T("spectrum", {size:64, interval:1000 / 30}).on("data", function() {
+      self.fft.plot({target:canvas});
+    }).listen(this.env);
+
+    this.env.play();
     this.player.start();
   },
 
   stop: function() {
     if (this.player) {
+      this.env.pause();
       this.player.stop();
       this.player = null;
     }
