@@ -36,12 +36,6 @@ Player = Backbone.Model.extend({
 
     var startingPosition, endingPosition;
 
-    // Start using note.get('width') instead of hardcoding 4.
-    //this.env   = T("perc", {a:100, r:4*this.interval()});
-    //this.pluck = T("PluckGen", {
-    //  env: this.env,
-    //  mul:0.5
-    //});
 
     this.glide = T("param");
     var wave = T("osc", {
@@ -51,11 +45,20 @@ Player = Backbone.Model.extend({
       //wave: "saw",
       //fb: "konami",
       wave: "wavc(0200080f)",
-      //mul: 0.5,
+      mul: 0.35,
       freq: this.glide,
     })
-    wave = T("comp", {thresh:-8, knee:300, ratio:204, gain:10}, wave);
-    wave = T("eq", { params:{hpf:[50,1],lmf:[828,1.8,18.3],mf:[2400,2.2,-24,5],lpf:[5000,1.1]} }, wave);
+
+    //wave = T("comp", {thresh:-8, knee:300, ratio:204, gain:0}, wave);
+    //wave = T("eq", { params:{hpf:[50,1],lmf:[828,1.8,18.3],mf:[2400,2.2,-24,5],lpf:[5000,1.1]} }, wave);
+    // Start using note.get('width') instead of hardcoding 4.
+    if (true) {
+    this.env   = T("perc", {a:100, d:300, r:500, r:4*this.interval()});
+    this.pluck = T("PluckGen", {
+      env: this.env,
+      mul:0.5
+    });
+    } else {
 
     this.env = T("adsr", {
       // Attack
@@ -73,6 +76,7 @@ Player = Backbone.Model.extend({
       //    r: 0,
     
     }, wave);
+    }
 
 
 
@@ -120,9 +124,9 @@ Player = Backbone.Model.extend({
         //  "100ms"
         //  //self.interval()// + "ms"
         //);
-        self.env.bang();
+        //self.env.bang();
 
-        //self.pluck.noteOn(noteVal, note.get('width') * self.player.interval);
+        self.pluck.noteOn(noteVal, note.get('width') * self.player.interval);
       }
 
       self.trigger('player:at', {
@@ -140,6 +144,7 @@ Player = Backbone.Model.extend({
       self.fft.plot({target:canvas});
     }).listen(this.env);
 
+    this.pluck.play();
     this.env.play();
     this.player.start();
   },
