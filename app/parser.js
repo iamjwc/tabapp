@@ -180,11 +180,11 @@ var TabParser = Backbone.Model.extend({
    * returns an array of the subdivisions the
    * subcolumns are at.
    *
-   * 12 % 12 == 0  |+           |  1 quarter note
-   * 12 % 6  == 0  |+     -     |  2 eighth
-   * 12 % 4  == 0  |+   -   -   |  3 eighth note triplets
-   * 12 % 3  == 0  |+  .  -  .  |  4 sixteenth notes
-   * 12 % 2  == 0  |+ . . - . . |  6 sixteenth note triplets
+   * 12 % 12 == 0  | +           |  1 quarter note
+   * 12 % 6  == 0  | +     -     |  2 eighth
+   * 12 % 4  == 0  | +   -   -   |  3 eighth note triplets
+   * 12 % 3  == 0  | +  .  -  .  |  4 sixteenth notes
+   * 12 % 2  == 0  | + . . - . . |  6 sixteenth note triplets
    *
    * Ex:
    *
