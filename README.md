@@ -1,4 +1,4 @@
-Run with `npm start`, then go to `http://localhost:3000/#tabs/squirrel_hunters.tab`
+Run with `npm start`, then go to `http://localhost:3000/#tabs/squirrel_hunters.tab`. Safari is less laggy than Chrome when it comes to html audio.
 
 
 Tab format:
