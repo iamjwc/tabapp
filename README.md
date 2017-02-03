@@ -1,7 +1,10 @@
-```
-"Squirrel Hunters" by John Hartford
+Run with `npm start`, then go to `http://localhost:3000/#tabs/squirrel_hunters.tab`. Safari is less laggy than Chrome when it comes to html audio.
 
-Tuning: EADGBE
+
+Tab format:
+
+```
+Squirrel Hunters by John Hartford
 
 | + - + - + - + - | + - + - + - + - | + - + - + - + - | + - + - + - + - | + - + - + - + - | + - + - + - + - | + - + - + - + - | + - + - + - + - |
 |-0---0-----------|-0-2-0-----------|-----------------|-------------0---|-0---0-----------|-0-2-0-----------|-----------------|-------------0---|
